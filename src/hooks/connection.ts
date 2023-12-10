@@ -40,6 +40,7 @@ export type TPost = {
   tags: {
     name: string;
   }[];
+  mediaAttachments: TMedia[];
 };
 
 export type TNotification = {
@@ -48,6 +49,25 @@ export type TNotification = {
   createdAt: Date;
   account: TAccount;
   status: TPost;
+};
+
+export type TMedia = {
+  id: string;
+  type: "image";
+  url: string;
+  previewUrl: string;
+  description: string;
+};
+
+const convertMedia = (data: any): TMedia => {
+  const media: TMedia = {
+    id: data.id,
+    description: data.description,
+    previewUrl: data.preview_url,
+    type: data.type,
+    url: data.url,
+  };
+  return media;
 };
 
 const convertAccount = (data: any): TAccount => {
@@ -98,6 +118,7 @@ const convertPost = (data: any): TPost => {
         name: d.name,
       };
     }),
+    mediaAttachments: data.media_attachments.map((d: any) => convertMedia(d)),
   };
 
   return post;

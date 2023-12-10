@@ -22,7 +22,7 @@ function App() {
           className={css({
             display: "flex",
             flexDir: "column",
-            w: 400,
+            w: 300,
           })}
         >
           {posts.map((post) => {
