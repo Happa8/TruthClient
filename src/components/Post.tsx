@@ -50,6 +50,7 @@ const Post: FC<Props> = ({ data }) => {
       className={css({
         bgColor: "gray.100",
         p: 2,
+        px: 4,
         borderY: "solid",
         borderYWidth: 1,
         borderColor: "gray.200",
@@ -61,14 +62,28 @@ const Post: FC<Props> = ({ data }) => {
       key={postdata.id}
     >
       {isRepost ? (
-        <p className={css({ color: "gray.700", fontSize: "small" })}>
-          {" "}
+        <p
+          className={css({
+            color: "gray.700",
+            fontSize: "small",
+            display: "inline-flex",
+            alignItems: "center",
+          })}
+        >
+          <span
+            className={css({
+              fontSize: "sm",
+              marginRight: 2,
+            })}
+          >
+            <MdRepeat />
+          </span>
           <span
             className={css({
               fontWeight: "bold",
             })}
           >
-            {postdata.account.displayName}
+            {data.account.displayName}
           </span>{" "}
           ReTruthed
         </p>
@@ -90,6 +105,7 @@ const Post: FC<Props> = ({ data }) => {
             display: "flex",
             flexDir: "column",
             lineHeight: "none",
+            gap: 1,
           })}
         >
           <p>
@@ -122,7 +138,29 @@ const Post: FC<Props> = ({ data }) => {
           </p>
         </div>
       </div>
-
+      {postdata.mentions.length !== 0 ? (
+        <div>
+          <p
+            className={css({
+              fontSize: "small",
+              color: "gray.700",
+            })}
+          >
+            Replying to{" "}
+            {postdata.mentions.map((m) => (
+              <span
+                className={css({
+                  color: "green.700",
+                })}
+              >
+                @{m.username}
+              </span>
+            ))}
+          </p>
+        </div>
+      ) : (
+        <></>
+      )}
       <div dangerouslySetInnerHTML={{ __html: postdata.content }} />
       {postdata.mediaAttachments.length !== 0 ? (
         <div
@@ -139,8 +177,9 @@ const Post: FC<Props> = ({ data }) => {
       <p
         className={css({
           display: "inline-flex",
-          gap: 3,
+          gap: 6,
           fontSize: "sm",
+          color: "gray.700",
         })}
       >
         <span
