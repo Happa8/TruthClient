@@ -41,9 +41,21 @@ const calcTimeDelta = (time: Date): string => {
   }
 };
 
+const checkQuote = (input: string): TPost | undefined => {
+  const matchPattern = new RegExp(
+    `<span class=\\"quote-inline\\"><br/>RT: (.*?)</span>`
+  );
+  const matchArray = input.match(matchPattern);
+  if (matchArray === null) {
+    return undefined;
+  }
+  const params = matchArray[0].slice(8).split("/");
+};
+
 const Post: FC<Props> = ({ data }) => {
   const isRepost = data.reblog !== null;
   const postdata = data.reblog !== null ? data.reblog : data;
+  // const quote =
 
   return (
     <div
@@ -58,6 +70,9 @@ const Post: FC<Props> = ({ data }) => {
         display: "flex",
         flexDir: "column",
         gap: 2,
+        _hover: {
+          bgColor: "gray.200",
+        },
       })}
       key={postdata.id}
     >

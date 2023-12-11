@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useAtom } from "jotai";
+import { tokenAtom } from "../atoms";
 
 export type TAccount = {
   id: string;
@@ -153,7 +155,26 @@ const updateArray = <T extends { id: string }>(
   }
 };
 
-export const useTimeline = (accessToken: string) => {
+export const usePost = ({ id }: { id: string }) => {
+  const [accessToken] = useAtom(tokenAtom);
+
+  const fetcher = useCallback(async () => {
+    const res = await fetch(`https://truthsocial.com/api/v1/statuses/${id}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return convertPost(res.json());
+  }, [accessToken, id]);
+
+  return useQuery({
+    queryKey: [id],
+    queryFn: fetcher,
+  });
+};
+
+export const useTimeline = () => {
+  const [accessToken] = useAtom(tokenAtom);
   const [posts, setPosts] = useState<TPost[]>([]);
   const [notifications, setNotifications] = useState<TNotification[]>([]);
   const socketRef = useRef<WebSocket>();

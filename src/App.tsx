@@ -3,11 +3,10 @@ import { css } from "../styled-system/css";
 import Post from "./components/Post";
 import { useTimeline } from "./hooks/connection";
 
-const accesstoken = import.meta.env.VITE_ACCESS_TOKEN;
+// const accesstoken = import.meta.env.VITE_ACCESS_TOKEN;
 
 function App() {
-  const { posts, loadMoreTimeLine, isFetching, notifications } =
-    useTimeline(accesstoken);
+  const { posts, loadMoreTimeLine, isFetching, notifications } = useTimeline();
 
   return (
     <>
@@ -87,7 +86,11 @@ function App() {
             className={css({
               display: "flex",
               flexDir: "column",
-              w: 400,
+              w: 300,
+              h: "100%",
+              overflowY: "auto",
+              bgColor: "gray.100",
+              p: 4,
             })}
           >
             {notifications.map((note) => {

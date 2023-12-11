@@ -16,6 +16,7 @@
     "@zag-js/dialog": "^0.31.1",
     "@zag-js/hover-card": "^0.31.1",
     "@zag-js/react": "^0.31.1",
+    "jotai": "^2.6.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.12.0",
