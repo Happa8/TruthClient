@@ -164,7 +164,8 @@ export const usePost = ({ id }: { id: string }) => {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    return convertPost(res.json());
+    const resjson = await res.json();
+    return convertPost(resjson);
   }, [accessToken, id]);
 
   return useQuery({

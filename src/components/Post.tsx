@@ -9,39 +9,14 @@ import {
   MdFavorite,
   MdRepeat,
 } from "react-icons/md";
+import { calcTimeDelta } from "../utils";
+import InnerPost from "./InnerPost";
 
 type Props = {
   data: TPost;
 };
 
-const oneSecond = 1000;
-const oneMinute = 60 * oneSecond;
-const oneHour = 60 * oneMinute;
-const oneDay = 24 * oneHour;
-const oneWeek = 7 * oneDay;
-
-const calcTimeDelta = (time: Date): string => {
-  const now = new Date();
-  const timeDelta = now.getTime() - time.getTime();
-
-  if (timeDelta > 4 * oneWeek) {
-    return time.toLocaleString("en", { month: "short", day: "2-digit" });
-  } else if (timeDelta > oneWeek) {
-    return `${Math.floor(timeDelta / oneWeek)}w`;
-  } else if (timeDelta > oneDay) {
-    return `${Math.floor(timeDelta / oneDay)}d`;
-  } else if (timeDelta > oneHour) {
-    return `${Math.floor(timeDelta / oneHour)}h`;
-  } else if (timeDelta > oneMinute) {
-    return `${Math.floor(timeDelta / oneMinute)}m`;
-  } else if (timeDelta > oneSecond) {
-    return `${Math.floor(timeDelta / oneSecond)}s`;
-  } else {
-    return "now";
-  }
-};
-
-const checkQuote = (input: string): TPost | undefined => {
+const checkQuote = (input: string): { id: string } | undefined => {
   const matchPattern = new RegExp(
     `<span class=\\"quote-inline\\"><br/>RT: (.*?)</span>`
   );
@@ -49,13 +24,23 @@ const checkQuote = (input: string): TPost | undefined => {
   if (matchArray === null) {
     return undefined;
   }
-  const params = matchArray[0].slice(8).split("/");
+  const params = matchArray[1].slice(8).split("/");
+  return {
+    id: params[4],
+  };
 };
 
 const Post: FC<Props> = ({ data }) => {
   const isRepost = data.reblog !== null;
   const postdata = data.reblog !== null ? data.reblog : data;
-  // const quote =
+  const quote = checkQuote(postdata.content);
+  const isQuote = !!quote;
+  const isMention = postdata.mentions.length !== 0;
+
+  const quotePattern = new RegExp(
+    `<span class=\\"quote-inline\\"><br/>RT: (.*?)</span>`
+  );
+  const content = postdata.content.replace(quotePattern, "");
 
   return (
     <div
@@ -153,7 +138,7 @@ const Post: FC<Props> = ({ data }) => {
           </p>
         </div>
       </div>
-      {postdata.mentions.length !== 0 ? (
+      {isMention && !isQuote ? (
         <div>
           <p
             className={css({
@@ -176,7 +161,7 @@ const Post: FC<Props> = ({ data }) => {
       ) : (
         <></>
       )}
-      <div dangerouslySetInnerHTML={{ __html: postdata.content }} />
+      <div dangerouslySetInnerHTML={{ __html: content }} />
       {postdata.mediaAttachments.length !== 0 ? (
         <div
           className={css({
@@ -189,6 +174,7 @@ const Post: FC<Props> = ({ data }) => {
       ) : (
         <></>
       )}
+      {isQuote ? <InnerPost id={quote.id} /> : <></>}
       <p
         className={css({
           display: "inline-flex",
