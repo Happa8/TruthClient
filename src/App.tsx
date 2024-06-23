@@ -1,7 +1,7 @@
 import { css } from "../styled-system/css";
-import LineWrapper from "./components/LineWrapper";
 import HomeLine from "./components/HomeLine";
 import NoteLine from "./components/NoteLine";
+import SendLine from "./components/SendLine";
 
 function App() {
   return (
@@ -23,26 +23,7 @@ function App() {
             gap: 1,
           })}
         >
-          <LineWrapper>
-            <div
-              className={css({
-                fontSize: "large",
-                fontWeight: "bold",
-                color: "gray.700",
-                p: 4,
-              })}
-            >
-              TRUTH Deck
-            </div>
-            <div
-              className={css({
-                w: "100%",
-                h: "2px",
-                my: 4,
-                bgColor: "gray.200",
-              })}
-            />
-          </LineWrapper>
+          <SendLine />
           <HomeLine />
           <NoteLine />
         </div>

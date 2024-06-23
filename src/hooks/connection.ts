@@ -115,7 +115,7 @@ const convertAccount = (data: any): TAccount => {
   return account;
 };
 
-const convertPost = (data: any): TPost => {
+export const convertPost = (data: any): TPost => {
   const post: TPost = {
     account: convertAccount(data.account),
     boolmarked: data.bookmarked,
