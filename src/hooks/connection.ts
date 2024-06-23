@@ -43,6 +43,9 @@ export type TPost = {
     name: string;
   }[];
   mediaAttachments: TMedia[];
+  card?: TCard;
+  quoteId?: string;
+  quote?: TPost;
 };
 
 export type TNotification = {
@@ -50,7 +53,7 @@ export type TNotification = {
   type: "mention" | "status" | "reblog" | "follow" | "favourite";
   createdAt: Date;
   account: TAccount;
-  status: TPost;
+  status?: TPost;
 };
 
 export type TMedia = {
@@ -59,6 +62,27 @@ export type TMedia = {
   url: string;
   previewUrl: string;
   description: string;
+};
+
+export type TCard = {
+  type: "link";
+  url: string;
+  title: string;
+  description: string;
+  image: string;
+  providerName: string;
+};
+
+const convertCard = (data: any): TCard => {
+  const card: TCard = {
+    type: "link",
+    url: data.url,
+    title: data.title,
+    description: data.description,
+    image: data.image,
+    providerName: data.provider_name,
+  };
+  return card;
 };
 
 const convertMedia = (data: any): TMedia => {
@@ -121,6 +145,9 @@ const convertPost = (data: any): TPost => {
       };
     }),
     mediaAttachments: data.media_attachments.map((d: any) => convertMedia(d)),
+    card: data.card === null ? undefined : convertCard(data.card),
+    quoteId: data.quote_id === null ? undefined : data.quote_id,
+    quote: data.quote === null ? undefined : convertPost(data.quote),
   };
 
   return post;
@@ -131,7 +158,7 @@ const convertNotification = (data: any): TNotification => {
     account: convertAccount(data.account),
     createdAt: new Date(data.created_at),
     id: data.id,
-    status: data.status,
+    status: data?.status === undefined ? undefined : convertPost(data.status),
     type: data.type,
   };
 
@@ -202,12 +229,45 @@ export const useTimeline = () => {
     getNextPageParam: (lastPage) => lastPage[lastPage.length - 1].id,
   });
 
+  const fetchNotification = useCallback(
+    async ({ pageParam } = { pageParam: "" }) => {
+      const res = await fetch(
+        `https://truthsocial.com/api/v1/notifications?max_id=${pageParam}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      return res.json();
+    },
+    [accessToken]
+  );
+
+  const {
+    data: noteData,
+    fetchNextPage: fetchNoteNextPage,
+    isFetching: isFetchingNote,
+  } = useInfiniteQuery({
+    queryKey: ["notifications"],
+    queryFn: fetchNotification,
+    initialPageParam: "",
+    getNextPageParam: (lastPage) => lastPage[lastPage.length - 1].id,
+  });
+
   useEffect(() => {
     data?.pages.flat().map((d) => {
       const newPost = convertPost(d);
       setPosts((prev) => updateArray(newPost, prev, "LI"));
     });
   }, [data, fetchHome]);
+
+  useEffect(() => {
+    noteData?.pages.flat().map((d) => {
+      const newNote = convertNotification(d);
+      setNotifications((prev) => updateArray(newNote, prev, "LI"));
+    });
+  }, [noteData, fetchNotification]);
 
   useEffect(() => {
     socketRef.current = new WebSocket(
@@ -230,8 +290,7 @@ export const useTimeline = () => {
           const newNotification = convertNotification(
             JSON.parse(receivedMessage["payload"])
           );
-          console.log(newNotification);
-          setNotifications((prev) => [newNotification, ...prev]);
+          setNotifications((prev) => updateArray(newNotification, prev));
           break;
         }
       }
@@ -256,5 +315,17 @@ export const useTimeline = () => {
     fetchNextPage();
   };
 
-  return { socketRef, posts, notifications, loadMoreTimeLine, isFetching };
+  const loadMoreNotifications = () => {
+    fetchNoteNextPage();
+  };
+
+  return {
+    socketRef,
+    posts,
+    notifications,
+    loadMoreTimeLine,
+    isFetching,
+    loadMoreNotifications,
+    isFetchingNote,
+  };
 };

@@ -1,0 +1,44 @@
+import { FC } from "react";
+import { css } from "../../styled-system/css";
+import LineHeader from "./LineHeader";
+import LineWrapper from "./LineWrapper";
+import { VList } from "virtua";
+import { useTimeline } from "../hooks/connection";
+import Notification from "./Notification";
+
+const NoteLine: FC = () => {
+  const { notifications, loadMoreNotifications, isFetchingNote } =
+    useTimeline();
+
+  return (
+    <LineWrapper>
+      <LineHeader title="Notification" />
+      <VList style={{ width: "100%" }}>
+        {notifications.map((note) => {
+          return <Notification noteData={note} key={note.id} />;
+        })}
+        <div
+          className={css({
+            w: "100%",
+            h: 100,
+            p: 4,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            bgColor: "gray.100",
+            _hover: { bgColor: "gray.200" },
+          })}
+          onClick={() => {
+            if (!isFetchingNote) {
+              loadMoreNotifications();
+            }
+          }}
+        >
+          <p>{isFetchingNote ? "Loading..." : "Click to load"}</p>
+        </div>
+      </VList>
+    </LineWrapper>
+  );
+};
+
+export default NoteLine;

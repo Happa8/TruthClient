@@ -26,6 +26,16 @@ export default defineConfig({
     },
   },
 
+  staticCss: {
+    css: [
+      {
+        properties: {
+          color: ["pink.700", "green.700", "blue.700"],
+        },
+      },
+    ],
+  },
+
   // The output directory for your css system
   outdir: "styled-system",
 });

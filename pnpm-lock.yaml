@@ -35,6 +35,9 @@ dependencies:
   socket.io-client:
     specifier: ^4.7.2
     version: 4.7.2
+  virtua:
+    specifier: ^0.17.5
+    version: 0.17.5(react-dom@18.2.0)(react@18.2.0)
 
 devDependencies:
   '@types/react':
@@ -3094,6 +3097,16 @@ packages:
 
   /util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
+    dev: false
+
+  /virtua@0.17.5(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-xTlxQ2/mDNSpU1tsdmpZT3kgoxSnjodTfs+OUeahkTSlBEWXnBujXKWXdl+hIRKOF1Igq8/gKPYltGSQV9p2eA==}
+    peerDependencies:
+      react: '>=16.14.0'
+      react-dom: '>=16.14.0'
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
     dev: false
 
   /vite@5.0.0:

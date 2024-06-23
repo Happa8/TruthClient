@@ -1,10 +1,15 @@
 import { FC } from "react";
 import { TPost, usePost } from "../hooks/connection";
 import { css } from "../../styled-system/css";
+import InnerCard from "./InnerCard";
+import { calcTimeDelta } from "../utils";
 
-type Props = { id: string } | { postdata: TPost };
+type Props = ({ id: string } | { postdata: TPost }) & { showCard?: boolean };
 
-const InnerPostCore: FC<{ postdata: TPost }> = ({ postdata }) => {
+const InnerPostCore: FC<{ postdata: TPost; showCard?: boolean }> = ({
+  postdata,
+  showCard = true,
+}) => {
   return (
     <div
       className={css({
@@ -15,18 +20,28 @@ const InnerPostCore: FC<{ postdata: TPost }> = ({ postdata }) => {
         borderRadius: "md",
         fontSize: "small",
         p: 3,
+        display: "flex",
+        flexDir: "column",
+        gap: 1,
       })}
     >
       <p className={css({ color: "gray.700" })}>
         <span className={css({ fontWeight: "bold" })}>
           {postdata.account.displayName}&nbsp;
         </span>
-        <span>@{postdata.account.userName}</span>
+        <span>
+          @{postdata.account.userName}・{calcTimeDelta(postdata.createdAt)}
+        </span>
       </p>
       <div
         className={css({ color: "gray.700" })}
         dangerouslySetInnerHTML={{ __html: postdata.content }}
       />
+      {postdata.card !== undefined && showCard ? (
+        <InnerCard carddata={postdata.card} />
+      ) : (
+        <></>
+      )}
     </div>
   );
 };
@@ -49,7 +64,9 @@ const InnerPost: FC<Props> = (props) => {
   if ("id" in props) {
     return <InnerPostWithId id={props.id} />;
   } else {
-    return <InnerPostCore postdata={props.postdata} />;
+    return (
+      <InnerPostCore postdata={props.postdata} showCard={props.showCard} />
+    );
   }
 };
 

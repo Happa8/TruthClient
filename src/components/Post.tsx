@@ -11,31 +11,15 @@ import {
 } from "react-icons/md";
 import { calcTimeDelta } from "../utils";
 import InnerPost from "./InnerPost";
+import InnerCard from "./InnerCard";
 
 type Props = {
   data: TPost;
 };
 
-const checkQuote = (input: string): { id: string } | undefined => {
-  const matchPattern = new RegExp(
-    `<span class=\\"quote-inline\\"><br/>RT: (.*?)</span>`
-  );
-  const matchArray = input.match(matchPattern);
-  if (matchArray === null) {
-    return undefined;
-  }
-  const params = matchArray[1].slice(8).split("/");
-  return {
-    id: params[4],
-  };
-};
-
 const Post: FC<Props> = ({ data }) => {
   const isRepost = data.reblog !== null;
   const postdata = data.reblog !== null ? data.reblog : data;
-  const quote = checkQuote(postdata.content);
-  const isQuote = !!quote;
-  const isMention = postdata.mentions.length !== 0;
 
   const quotePattern = new RegExp(
     `<span class=\\"quote-inline\\"><br/>RT: (.*?)</span>`
@@ -68,6 +52,7 @@ const Post: FC<Props> = ({ data }) => {
             fontSize: "small",
             display: "inline-flex",
             alignItems: "center",
+            flexFlow: "wrap",
           })}
         >
           <span
@@ -138,7 +123,7 @@ const Post: FC<Props> = ({ data }) => {
           </p>
         </div>
       </div>
-      {isMention && !isQuote ? (
+      {postdata.inReplyTo !== undefined ? (
         <div>
           <p
             className={css({
@@ -152,6 +137,7 @@ const Post: FC<Props> = ({ data }) => {
                 className={css({
                   color: "green.700",
                 })}
+                key={m.id}
               >
                 @{m.username}
               </span>
@@ -161,7 +147,14 @@ const Post: FC<Props> = ({ data }) => {
       ) : (
         <></>
       )}
-      <div dangerouslySetInnerHTML={{ __html: content }} />
+      <div
+        className={css({
+          "& p a.hashtag": {
+            color: "green.700",
+          },
+        })}
+        dangerouslySetInnerHTML={{ __html: content }}
+      />
       {postdata.mediaAttachments.length !== 0 ? (
         <div
           className={css({
@@ -174,7 +167,16 @@ const Post: FC<Props> = ({ data }) => {
       ) : (
         <></>
       )}
-      {isQuote ? <InnerPost id={quote.id} /> : <></>}
+      {postdata.quote !== undefined ? (
+        <InnerPost postdata={postdata.quote} />
+      ) : (
+        <></>
+      )}
+      {postdata.card !== undefined ? (
+        <InnerCard carddata={postdata.card} />
+      ) : (
+        <></>
+      )}
       <p
         className={css({
           display: "inline-flex",

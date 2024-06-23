@@ -1,13 +1,9 @@
-// import { useEffect, useRef, useState } from "react";
 import { css } from "../styled-system/css";
-import Post from "./components/Post";
-import { useTimeline } from "./hooks/connection";
-
-// const accesstoken = import.meta.env.VITE_ACCESS_TOKEN;
+import LineWrapper from "./components/LineWrapper";
+import HomeLine from "./components/HomeLine";
+import NoteLine from "./components/NoteLine";
 
 function App() {
-  const { posts, loadMoreTimeLine, isFetching, notifications } = useTimeline();
-
   return (
     <>
       <div
@@ -27,22 +23,13 @@ function App() {
             gap: 1,
           })}
         >
-          <div
-            className={css({
-              display: "flex",
-              flexDir: "column",
-              w: 300,
-              h: "100%",
-              overflowY: "auto",
-              bgColor: "gray.100",
-              p: 4,
-            })}
-          >
+          <LineWrapper>
             <div
               className={css({
                 fontSize: "large",
                 fontWeight: "bold",
                 color: "gray.700",
+                p: 4,
               })}
             >
               TRUTH Deck
@@ -55,52 +42,9 @@ function App() {
                 bgColor: "gray.200",
               })}
             />
-          </div>
-          <div
-            className={css({
-              display: "flex",
-              flexDir: "column",
-              w: 300,
-              h: "100%",
-              overflowY: "scroll",
-              position: "relative",
-            })}
-          >
-            {posts.map((post) => {
-              return <Post key={post.id} data={post} />;
-            })}
-            {isFetching ? (
-              <p>Loading...</p>
-            ) : (
-              <button
-                onClick={() => {
-                  loadMoreTimeLine();
-                }}
-              >
-                Load
-              </button>
-            )}
-            d
-          </div>
-          <div
-            className={css({
-              display: "flex",
-              flexDir: "column",
-              w: 300,
-              h: "100%",
-              overflowY: "auto",
-              bgColor: "gray.100",
-              p: 4,
-            })}
-          >
-            {notifications.map((note) => {
-              return (
-                <p>
-                  {note.account.displayName} {note.type}
-                </p>
-              );
-            })}
-          </div>
+          </LineWrapper>
+          <HomeLine />
+          <NoteLine />
         </div>
       </div>
     </>

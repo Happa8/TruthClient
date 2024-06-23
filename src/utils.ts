@@ -24,3 +24,17 @@ export const calcTimeDelta = (time: Date): string => {
     return "now";
   }
 };
+
+export const checkQuote = (input: string): { id: string } | undefined => {
+  const matchPattern = new RegExp(
+    `<span class=\\"quote-inline\\"><br/>RT: (.*?)</span>`
+  );
+  const matchArray = input.match(matchPattern);
+  if (matchArray === null) {
+    return undefined;
+  }
+  const params = matchArray[1].slice(8).split("/");
+  return {
+    id: params[4],
+  };
+};
