@@ -3,6 +3,7 @@ import { ComponentProps, FC } from "react";
 import LineWrapper from "./LineWrapper";
 import LineHeader from "./LineHeader";
 import TruthSubmitForm from "./TruthSubmitForm";
+import RetruthMenu from "./Menu";
 
 type Props = ComponentProps<"div">;
 

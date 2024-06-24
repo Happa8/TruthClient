@@ -1,10 +1,15 @@
 import { FC } from "react";
-import { TPost, usePost } from "../hooks/connection";
+import { TPost, TPostAtom, usePost } from "../hooks/connection";
 import { css } from "../../styled-system/css";
 import InnerCard from "./InnerCard";
 import { calcTimeDelta } from "../utils";
+import { useAtomValue } from "jotai";
 
-type Props = ({ id: string } | { postdata: TPost }) & { showCard?: boolean };
+type Props = (
+  | { id: string }
+  | { postdata: TPost }
+  | { postdataAtom: TPostAtom }
+) & { showCard?: boolean };
 
 const InnerPostCore: FC<{ postdata: TPost; showCard?: boolean }> = ({
   postdata,
@@ -60,13 +65,24 @@ const InnerPostWithId: FC<{ id: string }> = ({ id }) => {
   );
 };
 
+const InnerPostWithAtom: FC<{ postdataAtom: TPostAtom }> = ({
+  postdataAtom,
+}) => {
+  const data = useAtomValue(postdataAtom);
+  const postdata = data.reblog !== null ? data.reblog : data;
+
+  return <InnerPostCore postdata={postdata} />;
+};
+
 const InnerPost: FC<Props> = (props) => {
   if ("id" in props) {
     return <InnerPostWithId id={props.id} />;
-  } else {
+  } else if ("postdata" in props) {
     return (
       <InnerPostCore postdata={props.postdata} showCard={props.showCard} />
     );
+  } else {
+    return <InnerPostWithAtom postdataAtom={props.postdataAtom} />;
   }
 };
 

@@ -5,6 +5,7 @@ import { TPost, convertPost } from "./connection";
 
 export type TPostSend = {
   content: string;
+  quoteId?: string;
 };
 
 export const postTruth = async (
@@ -19,6 +20,7 @@ export const postTruth = async (
     },
     body: JSON.stringify({
       status: data.content,
+      quote_id: data.quoteId,
     }),
   })
     .then((res) => res.json())
@@ -78,5 +80,50 @@ export const useUnfavouritePost = () => {
 
   return useMutation({
     mutationFn: (data: TFavouritePost) => unfavoritePost(accessToken, data),
+  });
+};
+
+export type TRepost = {
+  id: string;
+  action: "repost" | "unrepost";
+};
+
+const repost = async (accessToken: string, data: TRepost) => {
+  const res = await fetch(
+    `https://truthsocial.com/api/v1/statuses/${data.id}/reblog`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+  return res;
+};
+
+const unrepost = async (accessToken: string, data: TRepost) => {
+  const res = await fetch(
+    `https://truthsocial.com/api/v1/statuses/${data.id}/unreblog`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+  return res;
+};
+
+export const useRepost = () => {
+  const [accessToken] = useAtom(tokenAtom);
+
+  return useMutation({
+    mutationFn: (data: TRepost) => {
+      if (data.action === "repost") {
+        return repost(accessToken, data);
+      } else {
+        return unrepost(accessToken, data);
+      }
+    },
   });
 };

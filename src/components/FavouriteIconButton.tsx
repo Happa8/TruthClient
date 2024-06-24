@@ -5,7 +5,7 @@ import { MdFavorite, MdFavoriteBorder } from "react-icons/md";
 type Props = {
   isFavourite: boolean;
   count: number;
-} & ComponentProps<"span">;
+} & ComponentProps<"button">;
 
 const style = cva({
   base: {
@@ -26,9 +26,9 @@ const style = cva({
 
 const FavouriteIconButton: FC<Props> = ({ isFavourite, count, ...props }) => {
   return (
-    <span className={style({ isFavourite })} {...props}>
+    <button className={style({ isFavourite })} {...props}>
       {isFavourite ? <MdFavorite /> : <MdFavoriteBorder />} {count}
-    </span>
+    </button>
   );
 };
 

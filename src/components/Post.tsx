@@ -2,14 +2,15 @@ import { FC } from "react";
 import { css } from "../../styled-system/css";
 import { TPost, TPostAtom, usePost } from "../hooks/connection";
 import Media from "./Media";
-
 import { MdOutlineModeComment, MdRepeat } from "react-icons/md";
 import { calcTimeDelta } from "../utils";
 import InnerPost from "./InnerPost";
 import InnerCard from "./InnerCard";
-import { useFavouritePost, useUnfavouritePost } from "../hooks/post";
+import { useFavouritePost, useRepost, useUnfavouritePost } from "../hooks/post";
 import FavouriteIconButton from "./FavouriteIconButton";
 import { useAtom } from "jotai";
+import Menu, { MenuItem } from "./Menu";
+import RepostIconButton from "./RepostIconButton";
 
 type Props = {
   dataAtom: TPostAtom;
@@ -199,21 +200,14 @@ const Post: FC<Props> = ({ dataAtom }) => {
         >
           <MdOutlineModeComment /> {postdata.repliesCount}
         </span>
-        <span
-          className={css({
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 1,
-          })}
-        >
-          <MdRepeat /> {postdata.reblogsCount}
-        </span>
+
+        <RepostIconButton dataAtom={dataAtom} />
         <FavouriteIconButton
           count={postdata.favouritesCount}
           isFavourite={postdata.favourited}
           onClick={() => {
             setData({
-              ...postdata,
+              ...data,
               favourited: !postdata.favourited,
               favouritesCount: postdata.favourited
                 ? postdata.favouritesCount > 0

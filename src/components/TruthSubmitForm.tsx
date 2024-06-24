@@ -3,6 +3,7 @@ import { FC } from "react";
 import TextArea from "./TextArea";
 import { atom, useAtom, useAtomValue } from "jotai";
 import { usePostTruth } from "../hooks/post";
+import { QuotePostAtom } from "../atoms";
 
 type Props = {
   className?: string;
@@ -16,6 +17,8 @@ const truthTextCountAtom = atom<number>(
 const TruthSubmitForm: FC<Props> = ({ className }) => {
   const [truthText, setTruthText] = useAtom(truthTextAtom);
   const truthTextCount = useAtomValue(truthTextCountAtom);
+
+  const [quotePostAtom, setQuotePostAtom] = useAtom(QuotePostAtom);
 
   const { mutateAsync, status } = usePostTruth();
 
@@ -64,6 +67,7 @@ const TruthSubmitForm: FC<Props> = ({ className }) => {
           {truthTextCount} / 1000
         </span>
       </div>
+
       <button
         type="submit"
         className={css({
