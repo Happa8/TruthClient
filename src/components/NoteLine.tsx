@@ -1,8 +1,8 @@
-import { FC } from "react";
+import { FC, useRef } from "react";
 import { css } from "../../styled-system/css";
 import LineHeader from "./LineHeader";
 import LineWrapper from "./LineWrapper";
-import { VList } from "virtua";
+import { VList, VListHandle } from "virtua";
 import { useTimeline } from "../hooks/connection";
 import Notification from "./Notification";
 
@@ -10,10 +10,21 @@ const NoteLine: FC = () => {
   const { notifications, loadMoreNotifications, isFetchingNote } =
     useTimeline();
 
+  const ListRef = useRef<VListHandle>(null);
+
   return (
     <LineWrapper>
-      <LineHeader title="Notification" />
-      <VList style={{ width: "100%" }}>
+      <LineHeader
+        title="Notification"
+        onClick={() => {
+          if (ListRef.current) {
+            ListRef.current.scrollToIndex(0, {
+              smooth: true,
+            });
+          }
+        }}
+      />
+      <VList style={{ width: "100%" }} ref={ListRef}>
         {notifications.map((note) => {
           return <Notification noteData={note} key={note.id} />;
         })}

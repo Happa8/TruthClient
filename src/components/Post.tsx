@@ -1,23 +1,25 @@
 import { FC } from "react";
 import { css } from "../../styled-system/css";
-import { TPost } from "../hooks/connection";
+import { TPost, TPostAtom, usePost } from "../hooks/connection";
 import Media from "./Media";
 
-import {
-  MdOutlineModeComment,
-  MdFavoriteBorder,
-  MdFavorite,
-  MdRepeat,
-} from "react-icons/md";
+import { MdOutlineModeComment, MdRepeat } from "react-icons/md";
 import { calcTimeDelta } from "../utils";
 import InnerPost from "./InnerPost";
 import InnerCard from "./InnerCard";
+import { useFavouritePost, useUnfavouritePost } from "../hooks/post";
+import FavouriteIconButton from "./FavouriteIconButton";
+import { useAtom } from "jotai";
 
 type Props = {
-  data: TPost;
+  dataAtom: TPostAtom;
 };
 
-const Post: FC<Props> = ({ data }) => {
+const Post: FC<Props> = ({ dataAtom }) => {
+  const [data, setData] = useAtom(dataAtom);
+
+  const { refetch } = usePost({ id: data.id });
+
   const isRepost = data.reblog !== null;
   const postdata = data.reblog !== null ? data.reblog : data;
 
@@ -25,6 +27,9 @@ const Post: FC<Props> = ({ data }) => {
     `<span class=\\"quote-inline\\"><br/>RT: (.*?)</span>`
   );
   const content = postdata.content.replace(quotePattern, "");
+
+  const { mutateAsync: favouritePost } = useFavouritePost();
+  const { mutateAsync: unfavouritePost } = useUnfavouritePost();
 
   return (
     <div
@@ -203,15 +208,34 @@ const Post: FC<Props> = ({ data }) => {
         >
           <MdRepeat /> {postdata.reblogsCount}
         </span>
-        <span
-          className={css({
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 1,
-          })}
-        >
-          <MdFavoriteBorder /> {postdata.favouritesCount}
-        </span>
+        <FavouriteIconButton
+          count={postdata.favouritesCount}
+          isFavourite={postdata.favourited}
+          onClick={() => {
+            setData({
+              ...postdata,
+              favourited: !postdata.favourited,
+              favouritesCount: postdata.favourited
+                ? postdata.favouritesCount > 0
+                  ? postdata.favouritesCount - 1
+                  : postdata.favouritesCount
+                : postdata.favouritesCount + 1,
+            });
+            if (!postdata.favourited) {
+              favouritePost({ id: postdata.id }).then(() => {
+                refetch().then((data) => {
+                  if (data.data !== undefined) setData(data.data);
+                });
+              });
+            } else {
+              unfavouritePost({ id: postdata.id }).then(() => {
+                refetch().then((data) => {
+                  if (data.data !== undefined) setData(data.data);
+                });
+              });
+            }
+          }}
+        />
       </p>
     </div>
   );

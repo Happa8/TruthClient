@@ -1,7 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useAtom } from "jotai";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  Atom,
+  PrimitiveAtom,
+  WritableAtom,
+  atom,
+  useAtom,
+  useAtomValue,
+} from "jotai";
 import { tokenAtom } from "../atoms";
 
 export type TAccount = {
@@ -25,7 +32,7 @@ export type TPost = {
   account: TAccount;
   boolmarked: boolean;
   content: string;
-  favourited: false;
+  favourited: boolean;
   favouritesCount: number;
   reblog: TPost | null;
   reblogsCount: number;
@@ -36,6 +43,7 @@ export type TPost = {
     id: number;
     url: string;
   }[];
+  reblogged: boolean;
   muted: boolean;
   pinned: boolean;
   sensitive: boolean;
@@ -133,6 +141,7 @@ export const convertPost = (data: any): TPost => {
     }),
     muted: data.muted,
     pinned: data.pinned,
+    reblogged: data.reblogged,
     reblogsCount: parseInt(data.reblogs_count),
     repliesCount: parseInt(data.replies_count),
     sensitive: data.sensitive,
@@ -201,8 +210,39 @@ export const usePost = ({ id }: { id: string }) => {
   });
 };
 
+export type TPostAtom = PrimitiveAtom<TPost>;
+
 export const useTimeline = () => {
   const [accessToken] = useAtom(tokenAtom);
+
+  const postListAtom = useMemo(() => atom<TPostAtom[]>([]), []);
+
+  const updatePostListAtom = useMemo(
+    () =>
+      atom(null, (get, set, newObj: TPost, direction: "FI" | "LI" = "FI") => {
+        const postList = get(postListAtom);
+        const index = postList.findIndex((item) => get(item).id === newObj.id);
+        const newPostAtom = atom(newObj);
+        if (index !== -1) {
+          set(postListAtom, [
+            ...postList.slice(0, index),
+            newPostAtom,
+            ...postList.slice(index + 1),
+          ]);
+        } else {
+          if (direction === "FI") {
+            set(postListAtom, [newPostAtom, ...postList]);
+          } else {
+            set(postListAtom, [...postList, newPostAtom]);
+          }
+        }
+      }),
+    [postListAtom]
+  );
+
+  const [_, updatePostList] = useAtom(updatePostListAtom);
+  const postList = useAtomValue(postListAtom);
+
   const [posts, setPosts] = useState<TPost[]>([]);
   const [notifications, setNotifications] = useState<TNotification[]>([]);
   const socketRef = useRef<WebSocket>();
@@ -259,6 +299,7 @@ export const useTimeline = () => {
     data?.pages.flat().map((d) => {
       const newPost = convertPost(d);
       setPosts((prev) => updateArray(newPost, prev, "LI"));
+      updatePostList(newPost, "LI");
     });
   }, [data, fetchHome]);
 
@@ -284,6 +325,7 @@ export const useTimeline = () => {
         case "update": {
           const newPost = convertPost(JSON.parse(receivedMessage["payload"]));
           setPosts((prev) => updateArray(newPost, prev));
+          updatePostList(newPost);
           break;
         }
         case "notification": {
@@ -322,6 +364,7 @@ export const useTimeline = () => {
   return {
     socketRef,
     posts,
+    postList,
     notifications,
     loadMoreTimeLine,
     isFetching,

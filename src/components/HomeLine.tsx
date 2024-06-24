@@ -1,22 +1,33 @@
-import { FC } from "react";
+import { FC, useRef } from "react";
 import { css } from "../../styled-system/css";
 import LineHeader from "./LineHeader";
 import LineWrapper from "./LineWrapper";
 import Post from "./Post";
 import { useTimeline } from "../hooks/connection";
-import { VList } from "virtua";
+import { VList, VListHandle } from "virtua";
 
 // type Props = {};
 
 const HomeLine: FC = () => {
-  const { posts, loadMoreTimeLine, isFetching } = useTimeline();
+  const { postList, loadMoreTimeLine, isFetching } = useTimeline();
+
+  const ListRef = useRef<VListHandle>(null);
 
   return (
     <LineWrapper>
-      <LineHeader title="Home" />
-      <VList style={{ width: "100%" }}>
-        {posts.map((post) => {
-          return <Post key={post.id} data={post} />;
+      <LineHeader
+        title="Home"
+        onClick={() => {
+          if (ListRef.current) {
+            ListRef.current.scrollToIndex(0, {
+              smooth: true,
+            });
+          }
+        }}
+      />
+      <VList style={{ width: "100%" }} ref={ListRef}>
+        {postList.map((post, i) => {
+          return <Post key={i} dataAtom={post} />;
         })}
         <div
           className={css({

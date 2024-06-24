@@ -1,11 +1,11 @@
-import { FC } from "react";
+import { ComponentProps, FC } from "react";
 import { css } from "../../styled-system/css";
 
 type Props = {
   title: string;
-};
+} & ComponentProps<"div">;
 
-const LineHeader: FC<Props> = ({ title }) => {
+const LineHeader: FC<Props> = ({ title, ...props }) => {
   return (
     <div
       className={css({
@@ -17,6 +17,7 @@ const LineHeader: FC<Props> = ({ title }) => {
         borderBottomWidth: "2px",
         borderColor: "gray.200",
       })}
+      {...props}
     >
       <p
         className={css({
