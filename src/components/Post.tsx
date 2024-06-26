@@ -1,9 +1,9 @@
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { css } from "../../styled-system/css";
 import { TPost, TPostAtom, usePost } from "../hooks/connection";
 import Media from "./Media";
 import { MdOutlineModeComment, MdRepeat } from "react-icons/md";
-import { calcTimeDelta } from "../utils";
+import { calcTimeDelta, getContentFromPost, quotePattern } from "../utils";
 import InnerPost from "./InnerPost";
 import InnerCard from "./InnerCard";
 import { useFavouritePost, useRepost, useUnfavouritePost } from "../hooks/post";
@@ -11,6 +11,8 @@ import FavouriteIconButton from "./FavouriteIconButton";
 import { useAtom } from "jotai";
 import Menu, { MenuItem } from "./Menu";
 import RepostIconButton from "./RepostIconButton";
+import Avatar from "./Avatar";
+import { ColumnsAtom } from "../atoms";
 
 type Props = {
   dataAtom: TPostAtom;
@@ -24,13 +26,28 @@ const Post: FC<Props> = ({ dataAtom }) => {
   const isRepost = data.reblog !== null;
   const postdata = data.reblog !== null ? data.reblog : data;
 
-  const quotePattern = new RegExp(
-    `<span class=\\"quote-inline\\"><br/>RT: (.*?)</span>`
-  );
-  const content = postdata.content.replace(quotePattern, "");
+  const content = getContentFromPost(postdata.content);
 
   const { mutateAsync: favouritePost } = useFavouritePost();
   const { mutateAsync: unfavouritePost } = useUnfavouritePost();
+
+  const [_, dispatchColumn] = useAtom(ColumnsAtom);
+
+  // テキストが選択されている／されていた直後はクリックイベントを発火させない
+  const [isSelecting, setIsSelecting] = useState(false);
+  useEffect(() => {
+    const handleSelectionChange = () => {
+      // テキストが選択されているかどうかを確認
+      const selection = window.getSelection();
+      setIsSelecting(
+        selection !== null ? selection.toString().length > 0 : false
+      );
+    };
+    document.addEventListener("selectionchange", handleSelectionChange);
+    return () => {
+      document.removeEventListener("selectionchange", handleSelectionChange);
+    };
+  }, []);
 
   return (
     <div
@@ -48,8 +65,20 @@ const Post: FC<Props> = ({ dataAtom }) => {
         _hover: {
           bgColor: "gray.200",
         },
+        cursor: "pointer",
       })}
       key={postdata.id}
+      onClick={() => {
+        if (!isSelecting) {
+          dispatchColumn({
+            type: "push",
+            value: {
+              type: "PostDetail",
+              postId: postdata.id,
+            },
+          });
+        }
+      }}
     >
       {isRepost ? (
         <p
@@ -75,22 +104,20 @@ const Post: FC<Props> = ({ dataAtom }) => {
             })}
           >
             {data.account.displayName}
-          </span>{" "}
-          ReTruthed
+          </span>
+          &nbsp; ReTruthed
         </p>
       ) : (
         <></>
       )}
       <div className={css({ display: "flex", gap: 2, alignItems: "center" })}>
-        <img
-          className={css({
-            w: 8,
-            h: 8,
-            aspectRatio: "1/1",
-            borderRadius: "full",
-          })}
-          src={postdata.account.avatar}
+        <Avatar
+          mainImg={
+            postdata.group ? postdata.group.avatar : postdata.account.avatar
+          }
+          subImg={postdata.group && postdata.account.avatar}
         />
+
         <div
           className={css({
             display: "flex",
@@ -106,7 +133,9 @@ const Post: FC<Props> = ({ dataAtom }) => {
                 color: "gray.900",
               })}
             >
-              {postdata.account.displayName}
+              {postdata.group
+                ? postdata.group.displayName
+                : postdata.account.displayName}
             </span>
           </p>
           <p>
@@ -116,7 +145,16 @@ const Post: FC<Props> = ({ dataAtom }) => {
                 color: "gray.700",
               })}
             >
-              @{postdata.account.userName}
+              {postdata.group && "posted by "}
+              <a
+                href={postdata.account.url}
+                target="_blank"
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+              >
+                @{postdata.account.userName}
+              </a>
             </span>
             <span
               className={css({
@@ -124,12 +162,20 @@ const Post: FC<Props> = ({ dataAtom }) => {
                 color: "gray.700",
               })}
             >
-              ・{calcTimeDelta(postdata.createdAt)}
+              <a
+                href={postdata.url}
+                target="_blank"
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+              >
+                ・{calcTimeDelta(postdata.createdAt)}
+              </a>
             </span>
           </p>
         </div>
       </div>
-      {postdata.inReplyTo !== undefined ? (
+      {postdata.inReplyTo !== undefined && (
         <div>
           <p
             className={css({
@@ -150,18 +196,19 @@ const Post: FC<Props> = ({ dataAtom }) => {
             ))}
           </p>
         </div>
-      ) : (
-        <></>
       )}
       <div
         className={css({
           "& p a.hashtag": {
             color: "green.700",
           },
+          "& p a": {
+            color: "blue.700",
+          },
         })}
         dangerouslySetInnerHTML={{ __html: content }}
       />
-      {postdata.mediaAttachments.length !== 0 ? (
+      {postdata.mediaAttachments.length !== 0 && (
         <div
           className={css({
             px: 10,
@@ -170,19 +217,9 @@ const Post: FC<Props> = ({ dataAtom }) => {
         >
           <Media medias={postdata.mediaAttachments} />
         </div>
-      ) : (
-        <></>
       )}
-      {postdata.quote !== undefined ? (
-        <InnerPost postdata={postdata.quote} />
-      ) : (
-        <></>
-      )}
-      {postdata.card !== undefined ? (
-        <InnerCard carddata={postdata.card} />
-      ) : (
-        <></>
-      )}
+      {postdata.quote !== undefined && <InnerPost postdata={postdata.quote} />}
+      {postdata.card !== undefined && <InnerCard carddata={postdata.card} />}
       <p
         className={css({
           display: "inline-flex",
@@ -190,6 +227,9 @@ const Post: FC<Props> = ({ dataAtom }) => {
           fontSize: "sm",
           color: "gray.700",
         })}
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
       >
         <span
           className={css({

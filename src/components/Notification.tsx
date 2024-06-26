@@ -1,14 +1,20 @@
-import { FC } from "react";
-import { TNotification } from "../hooks/connection";
+import { FC, memo, useEffect, useState } from "react";
+import { TNotification, TNotificationAtom } from "../hooks/connection";
 import InnerPost from "./InnerPost";
 import { css } from "../../styled-system/css";
 import { calcTimeDelta } from "../utils";
 import { MdFavorite, MdRepeat, MdPerson } from "react-icons/md";
 import { GoMention } from "react-icons/go";
+import { useAtom, useAtomValue } from "jotai";
+import { ColumnsAtom } from "../atoms";
 
-type Props = {
-  noteData: TNotification;
-};
+type Props =
+  | {
+      noteData: TNotification;
+    }
+  | {
+      noteDataAtom: TNotificationAtom;
+    };
 
 const describeNote = (type: TNotification["type"]): string => {
   switch (type) {
@@ -52,7 +58,26 @@ const noteColor = (type: TNotification["type"]) => {
   }
 };
 
-const Notification: FC<Props> = ({ noteData }) => {
+const NotificationCore: FC<{
+  noteData: TNotification;
+}> = ({ noteData }) => {
+  const [_, dispatchColumn] = useAtom(ColumnsAtom);
+
+  const [isSelecting, setIsSelecting] = useState(false);
+  useEffect(() => {
+    const handleSelectionChange = () => {
+      // テキストが選択されているかどうかを確認
+      const selection = window.getSelection();
+      setIsSelecting(
+        selection !== null ? selection.toString().length > 0 : false
+      );
+    };
+    document.addEventListener("selectionchange", handleSelectionChange);
+    return () => {
+      document.removeEventListener("selectionchange", handleSelectionChange);
+    };
+  }, []);
+
   return (
     <div
       className={css({
@@ -70,7 +95,20 @@ const Notification: FC<Props> = ({ noteData }) => {
         _hover: {
           bgColor: "gray.200",
         },
+        cursor: "pointer",
       })}
+      onClick={() => {
+        if (!isSelecting) {
+          noteData.status &&
+            dispatchColumn({
+              type: "push",
+              value: {
+                type: "PostDetail",
+                postId: noteData.status.id,
+              },
+            });
+        }
+      }}
     >
       <p
         className={css({
@@ -116,4 +154,22 @@ const Notification: FC<Props> = ({ noteData }) => {
   );
 };
 
-export default Notification;
+const NotificationWithAtom: FC<{ noteDataAtom: TNotificationAtom }> = ({
+  noteDataAtom,
+}) => {
+  const noteData = useAtomValue(noteDataAtom);
+  return <NotificationCore noteData={noteData} />;
+};
+
+const Notification: FC<Props> = ({ ...props }) => {
+  if ("noteData" in props) {
+    return <NotificationCore noteData={props.noteData} />;
+  } else if ("noteDataAtom" in props) {
+    return <NotificationWithAtom noteDataAtom={props.noteDataAtom} />;
+  }
+  return <></>;
+};
+
+const memoizedNotification = memo(Notification);
+
+export default memoizedNotification;

@@ -20,11 +20,13 @@ const InnerCard: FC<Props> = ({ carddata }) => {
         borderWidth: 1,
         borderRadius: "md",
         fontSize: "small",
-        // p: 3,
         display: "flex",
         flexDir: "column",
         overflow: "hidden",
       })}
+      onClick={(e) => {
+        e.stopPropagation();
+      }}
     >
       {carddata.image !== "" ? (
         <img

@@ -5,6 +5,7 @@ import { useAtom } from "jotai";
 import Menu, { MenuItem } from "./Menu";
 import { MdRepeat } from "react-icons/md";
 import { useRepost } from "../hooks/post";
+import { QuotePostAtom } from "../atoms";
 
 type Props = {
   dataAtom: TPostAtom;
@@ -30,6 +31,8 @@ const style = cva({
 const RepostIconButton: FC<Props> = ({ dataAtom }) => {
   const [data, setData] = useAtom(dataAtom);
   const postdata = data.reblog !== null ? data.reblog : data;
+
+  const [_, setQuotePostAtom] = useAtom(QuotePostAtom);
 
   const { mutateAsync: repost } = useRepost();
 
@@ -62,7 +65,14 @@ const RepostIconButton: FC<Props> = ({ dataAtom }) => {
       >
         {postdata.reblogged ? "Undo ReTruth" : "ReTruth"}
       </MenuItem>
-      <MenuItem value="quote">Quote Truth</MenuItem>
+      <MenuItem
+        value="quote"
+        onClick={() => {
+          setQuotePostAtom(dataAtom);
+        }}
+      >
+        Quote Truth
+      </MenuItem>
     </Menu>
   );
 };

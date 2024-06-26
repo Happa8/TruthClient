@@ -1,4 +1,4 @@
-import { FC, useRef } from "react";
+import { FC, memo, useRef } from "react";
 import { css } from "../../styled-system/css";
 import LineHeader from "./LineHeader";
 import LineWrapper from "./LineWrapper";
@@ -52,4 +52,6 @@ const HomeLine: FC = () => {
   );
 };
 
-export default HomeLine;
+const memoizedHomeLine = memo(HomeLine);
+
+export default memoizedHomeLine;

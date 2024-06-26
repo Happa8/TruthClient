@@ -10,6 +10,15 @@ const TextArea: FC<Props> = ({ ...props }) => {
         css({
           minH: 160,
           w: "100%",
+          p: 2,
+          borderWidth: 1,
+          borderColor: "transparent",
+          _focus: {
+            outline: "none",
+            borderColor: "gray.400",
+            borderWidth: 1,
+            boxSizing: "border-box",
+          },
         }),
         props.className
       )}

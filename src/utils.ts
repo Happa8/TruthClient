@@ -38,3 +38,11 @@ export const checkQuote = (input: string): { id: string } | undefined => {
     id: params[4],
   };
 };
+
+export const quotePattern = new RegExp(
+  `<span class=\\"quote-inline\\"><br/>RT: (.*?)</span>`
+);
+
+export const getContentFromPost = (input: string): string => {
+  return input.replace(quotePattern, "");
+};

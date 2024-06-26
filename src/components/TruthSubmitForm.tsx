@@ -1,9 +1,11 @@
 import { css, cx } from "@/styled-system/css";
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import TextArea from "./TextArea";
-import { atom, useAtom, useAtomValue } from "jotai";
+import { Atom, atom, useAtom, useAtomValue } from "jotai";
 import { usePostTruth } from "../hooks/post";
-import { QuotePostAtom } from "../atoms";
+import { QuotePostAtom, useNullableAtomValue } from "../atoms";
+import InnerPost from "./InnerPost";
+import { MdCancel } from "react-icons/md";
 
 type Props = {
   className?: string;
@@ -19,14 +21,17 @@ const TruthSubmitForm: FC<Props> = ({ className }) => {
   const truthTextCount = useAtomValue(truthTextCountAtom);
 
   const [quotePostAtom, setQuotePostAtom] = useAtom(QuotePostAtom);
+  const quotePost = useNullableAtomValue(quotePostAtom);
 
   const { mutateAsync, status } = usePostTruth();
 
   const onSubmit = () => {
     mutateAsync({
       content: truthText,
+      quoteId: quotePost?.id,
     }).then(() => {
       setTruthText("");
+      setQuotePostAtom(null);
     });
   };
 
@@ -58,6 +63,33 @@ const TruthSubmitForm: FC<Props> = ({ className }) => {
         onChange={(e) => setTruthText(e.target.value)}
         onKeyDown={handleKeyDown}
       />
+
+      {quotePostAtom && (
+        <div
+          className={css({
+            position: "relative",
+          })}
+        >
+          <InnerPost postdataAtom={quotePostAtom} />
+          <button
+            type="button"
+            className={css({
+              position: "absolute",
+              top: 0,
+              right: 0,
+              padding: 2,
+              cursor: "pointer",
+              color: "gray.400",
+            })}
+            onClick={() => {
+              setQuotePostAtom(null);
+            }}
+          >
+            <MdCancel />
+          </button>
+        </div>
+      )}
+
       <div>
         <span
           className={css({

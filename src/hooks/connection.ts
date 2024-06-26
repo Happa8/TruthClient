@@ -1,5 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useQuery,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Atom,
@@ -23,6 +27,7 @@ export type TAccount = {
   note: string;
   statusesCount: number;
   website: string;
+  header: string;
   url: string;
 };
 
@@ -54,6 +59,9 @@ export type TPost = {
   card?: TCard;
   quoteId?: string;
   quote?: TPost;
+  url: string;
+  uri: string;
+  group?: TGroup;
 };
 
 export type TNotification = {
@@ -70,6 +78,26 @@ export type TMedia = {
   url: string;
   previewUrl: string;
   description: string;
+};
+
+export type TGroup = {
+  id: string;
+  note: string;
+  displayName: string;
+  locked: boolean;
+  discoverable: boolean;
+  avatar: string;
+  header: string;
+  url: string;
+  source: {
+    note: string;
+  };
+  owner: {
+    id: string;
+  };
+  tags: {
+    name: string;
+  }[];
 };
 
 export type TCard = {
@@ -108,6 +136,7 @@ const convertAccount = (data: any): TAccount => {
   const account: TAccount = {
     avatar: data.avatar,
     bot: data.bot,
+    header: data.header,
     createdAt: new Date(data.created_at),
     displayName: data.display_name,
     followersCount: data.followers_count,
@@ -121,6 +150,32 @@ const convertAccount = (data: any): TAccount => {
   };
 
   return account;
+};
+
+const convertGroup = (data: any): TGroup => {
+  const group: TGroup = {
+    avatar: data.avatar,
+    discoverable: data.discoverable,
+    displayName: data.display_name,
+    header: data.header,
+    id: data.id,
+    locked: data.locked,
+    note: data.note,
+    owner: {
+      id: data.owner.id,
+    },
+    source: {
+      note: data.source.note,
+    },
+    tags: data.tags.map((d: any) => {
+      return {
+        name: d.name,
+      };
+    }),
+    url: data.url,
+  };
+
+  return group;
 };
 
 export const convertPost = (data: any): TPost => {
@@ -157,6 +212,9 @@ export const convertPost = (data: any): TPost => {
     card: data.card === null ? undefined : convertCard(data.card),
     quoteId: data.quote_id === null ? undefined : data.quote_id,
     quote: data.quote === null ? undefined : convertPost(data.quote),
+    url: data.url,
+    uri: data.uri,
+    group: data.group === null ? undefined : convertGroup(data.group),
   };
 
   return post;
@@ -191,18 +249,23 @@ const updateArray = <T extends { id: string }>(
   }
 };
 
+const getPost = async (accessToken: string, id: string) => {
+  const res = await fetch(`https://truthsocial.com/api/v1/statuses/${id}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  const resjson = await res.json();
+  return convertPost(resjson);
+};
+
 export const usePost = ({ id }: { id: string }) => {
   const [accessToken] = useAtom(tokenAtom);
 
-  const fetcher = useCallback(async () => {
-    const res = await fetch(`https://truthsocial.com/api/v1/statuses/${id}`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-    const resjson = await res.json();
-    return convertPost(resjson);
-  }, [accessToken, id]);
+  const fetcher = useCallback(
+    () => getPost(accessToken, id),
+    [accessToken, id]
+  );
 
   return useQuery({
     queryKey: [id],
@@ -210,41 +273,79 @@ export const usePost = ({ id }: { id: string }) => {
   });
 };
 
-export type TPostAtom = PrimitiveAtom<TPost>;
-
-export const useTimeline = () => {
+export const useGetPostSuspense = ({ id }: { id: string }) => {
   const [accessToken] = useAtom(tokenAtom);
 
-  const postListAtom = useMemo(() => atom<TPostAtom[]>([]), []);
+  const fetcher = useCallback(
+    () => getPost(accessToken, id),
+    [accessToken, id]
+  );
 
-  const updatePostListAtom = useMemo(
+  return useSuspenseQuery({
+    queryKey: [id],
+    queryFn: fetcher,
+  });
+};
+
+export type TPostAtom = PrimitiveAtom<TPost>;
+
+export type TNotificationAtom = PrimitiveAtom<TNotification>;
+
+const useUpdateListAtom = <T extends { id: string }>(
+  sourceAtom: PrimitiveAtom<PrimitiveAtom<T>[]>
+) =>
+  useMemo(
     () =>
-      atom(null, (get, set, newObj: TPost, direction: "FI" | "LI" = "FI") => {
-        const postList = get(postListAtom);
+      atom(null, (get, set, newObj: T, direction: "FI" | "LI" = "FI") => {
+        const postList = get(sourceAtom);
         const index = postList.findIndex((item) => get(item).id === newObj.id);
         const newPostAtom = atom(newObj);
         if (index !== -1) {
-          set(postListAtom, [
+          set(sourceAtom, [
             ...postList.slice(0, index),
             newPostAtom,
             ...postList.slice(index + 1),
           ]);
         } else {
           if (direction === "FI") {
-            set(postListAtom, [newPostAtom, ...postList]);
+            set(sourceAtom, [newPostAtom, ...postList]);
           } else {
-            set(postListAtom, [...postList, newPostAtom]);
+            set(sourceAtom, [...postList, newPostAtom]);
           }
         }
       }),
-    [postListAtom]
+    [sourceAtom]
   );
 
-  const [_, updatePostList] = useAtom(updatePostListAtom);
-  const postList = useAtomValue(postListAtom);
+const correctAllValuesAtom = <T>(
+  sourceAtom: PrimitiveAtom<PrimitiveAtom<T>[]>
+): Atom<T[]> => atom((get) => get(sourceAtom).map((atom) => get(atom)));
 
-  const [posts, setPosts] = useState<TPost[]>([]);
-  const [notifications, setNotifications] = useState<TNotification[]>([]);
+export const useCorrectAllValues = <T>(
+  sourceAtom: PrimitiveAtom<PrimitiveAtom<T>[]>
+): T[] => {
+  const allValuesAtom = useMemo(
+    () => correctAllValuesAtom(sourceAtom),
+    [sourceAtom]
+  );
+  return useAtomValue(allValuesAtom);
+};
+
+export const useTimeline = () => {
+  const [accessToken] = useAtom(tokenAtom);
+
+  const postListAtom = useMemo(() => atom<TPostAtom[]>([]), []);
+  const updatePostListAtom = useUpdateListAtom(postListAtom);
+  const [_a, updatePostList] = useAtom(updatePostListAtom);
+  const postList = useAtomValue(postListAtom);
+  const posts = useCorrectAllValues(postListAtom);
+
+  const notificationListAtom = useMemo(() => atom<TNotificationAtom[]>([]), []);
+  const updateNotificationListAtom = useUpdateListAtom(notificationListAtom);
+  const [_b, updateNotificationList] = useAtom(updateNotificationListAtom);
+  const notificationList = useAtomValue(notificationListAtom);
+  const notifications = useCorrectAllValues(notificationListAtom);
+
   const socketRef = useRef<WebSocket>();
 
   const fetchHome = useCallback(
@@ -298,7 +399,6 @@ export const useTimeline = () => {
   useEffect(() => {
     data?.pages.flat().map((d) => {
       const newPost = convertPost(d);
-      setPosts((prev) => updateArray(newPost, prev, "LI"));
       updatePostList(newPost, "LI");
     });
   }, [data, fetchHome]);
@@ -306,7 +406,7 @@ export const useTimeline = () => {
   useEffect(() => {
     noteData?.pages.flat().map((d) => {
       const newNote = convertNotification(d);
-      setNotifications((prev) => updateArray(newNote, prev, "LI"));
+      updateNotificationList(newNote, "LI");
     });
   }, [noteData, fetchNotification]);
 
@@ -324,7 +424,6 @@ export const useTimeline = () => {
       switch (receivedMessage["event"]) {
         case "update": {
           const newPost = convertPost(JSON.parse(receivedMessage["payload"]));
-          setPosts((prev) => updateArray(newPost, prev));
           updatePostList(newPost);
           break;
         }
@@ -332,7 +431,7 @@ export const useTimeline = () => {
           const newNotification = convertNotification(
             JSON.parse(receivedMessage["payload"])
           );
-          setNotifications((prev) => updateArray(newNotification, prev));
+          updateNotificationList(newNotification);
           break;
         }
       }
@@ -366,6 +465,7 @@ export const useTimeline = () => {
     posts,
     postList,
     notifications,
+    notificationList,
     loadMoreTimeLine,
     isFetching,
     loadMoreNotifications,

@@ -1,11 +1,13 @@
 import { ComponentProps, FC } from "react";
 import { css } from "../../styled-system/css";
+import { MdClose } from "react-icons/md";
 
 type Props = {
   title: string;
+  onClickClose?: () => void;
 } & ComponentProps<"div">;
 
-const LineHeader: FC<Props> = ({ title, ...props }) => {
+const LineHeader: FC<Props> = ({ title, onClickClose, ...props }) => {
   return (
     <div
       className={css({
@@ -16,6 +18,7 @@ const LineHeader: FC<Props> = ({ title, ...props }) => {
         borderBottom: "solid",
         borderBottomWidth: "2px",
         borderColor: "gray.200",
+        position: "relative",
       })}
       {...props}
     >
@@ -28,6 +31,20 @@ const LineHeader: FC<Props> = ({ title, ...props }) => {
       >
         {title}
       </p>
+      {onClickClose && (
+        <button
+          className={css({
+            fontSize: "large",
+            color: "gray.700",
+            position: "absolute",
+            right: 4,
+            cursor: "pointer",
+          })}
+          onClick={onClickClose}
+        >
+          <MdClose />
+        </button>
+      )}
     </div>
   );
 };

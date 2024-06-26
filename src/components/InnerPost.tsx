@@ -3,7 +3,8 @@ import { TPost, TPostAtom, usePost } from "../hooks/connection";
 import { css } from "../../styled-system/css";
 import InnerCard from "./InnerCard";
 import { calcTimeDelta } from "../utils";
-import { useAtomValue } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
+import { ColumnsAtom } from "../atoms";
 
 type Props = (
   | { id: string }
@@ -15,6 +16,8 @@ const InnerPostCore: FC<{ postdata: TPost; showCard?: boolean }> = ({
   postdata,
   showCard = true,
 }) => {
+  const [_, dispatchColumn] = useAtom(ColumnsAtom);
+
   return (
     <div
       className={css({
@@ -28,7 +31,18 @@ const InnerPostCore: FC<{ postdata: TPost; showCard?: boolean }> = ({
         display: "flex",
         flexDir: "column",
         gap: 1,
+        cursor: "pointer",
       })}
+      onClick={(e) => {
+        e.stopPropagation();
+        dispatchColumn({
+          type: "push",
+          value: {
+            type: "PostDetail",
+            postId: postdata.id,
+          },
+        });
+      }}
     >
       <p className={css({ color: "gray.700" })}>
         <span className={css({ fontWeight: "bold" })}>

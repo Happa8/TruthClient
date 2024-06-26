@@ -7,9 +7,8 @@ import { useTimeline } from "../hooks/connection";
 import Notification from "./Notification";
 
 const NoteLine: FC = () => {
-  const { notifications, loadMoreNotifications, isFetchingNote } =
+  const { notificationList, loadMoreNotifications, isFetchingNote } =
     useTimeline();
-
   const ListRef = useRef<VListHandle>(null);
 
   return (
@@ -25,8 +24,8 @@ const NoteLine: FC = () => {
         }}
       />
       <VList style={{ width: "100%" }} ref={ListRef}>
-        {notifications.map((note) => {
-          return <Notification noteData={note} key={note.id} />;
+        {notificationList.map((note) => {
+          return <Notification noteDataAtom={note} key={note.toString()} />;
         })}
         <div
           className={css({
