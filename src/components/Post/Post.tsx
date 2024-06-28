@@ -1,8 +1,8 @@
-import { FC, useEffect, useState } from "react";
-import { css } from "../../../styled-system/css";
+import { FC, useEffect, useRef, useState } from "react";
+import { css, cva } from "../../../styled-system/css";
 import { TPostAtom, usePost } from "../../hooks/connection";
 import Media from "./Media";
-import { MdOutlineModeComment, MdRepeat } from "react-icons/md";
+import { MdRepeat } from "react-icons/md";
 import { calcTimeDelta, getContentFromPost } from "../../utils";
 import InnerPost from "./InnerPost";
 import InnerCard from "./InnerCard";
@@ -12,12 +12,25 @@ import { useAtom } from "jotai";
 import RepostIconButton from "./RepostIconButton";
 import Avatar from "./Avatar";
 import { ColumnsAtom } from "../../atoms";
-import ReplyInputField from "./ReplyInputField";
 import ReplyIconButton from "./ReplyIconButton";
 
 type Props = {
   dataAtom: TPostAtom;
 };
+
+const contentStyle = cva({
+  base: {},
+  variants: {
+    isShrinked: {
+      true: {
+        maxHeight: 200,
+        overflowY: "hidden",
+        maskImage: "linear-gradient(180deg, black 80%, transparent 100%)",
+      },
+      false: {},
+    },
+  },
+});
 
 const Post: FC<Props> = ({ dataAtom }) => {
   const [data, setData] = useAtom(dataAtom);
@@ -53,6 +66,21 @@ const Post: FC<Props> = ({ dataAtom }) => {
     return () => {
       document.removeEventListener("selectionchange", handleSelectionChange);
     };
+  }, []);
+
+  // 投稿の展開状態を管理
+  const [isExpanded, setIsExpanded] = useState(false);
+  const contentDivRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const handleResize = () => {
+      if (contentDivRef.current) {
+        const height = contentDivRef.current.offsetHeight;
+        const threshold = 240;
+        setIsExpanded(height < threshold);
+      }
+    };
+
+    handleResize();
   }, []);
 
   return (
@@ -207,17 +235,45 @@ const Post: FC<Props> = ({ dataAtom }) => {
             </p>
           </div>
         )}
-        <div
-          className={css({
-            "& p a.hashtag": {
-              color: "green.700",
-            },
-            "& p a": {
+        <div>
+          <div
+            className={contentStyle({
+              isShrinked: !isExpanded,
+            })}
+          >
+            <div
+              className={css({
+                "& p a.hashtag": {
+                  color: "green.700",
+                },
+                "& p a": {
+                  color: "blue.700",
+                },
+              })}
+              dangerouslySetInnerHTML={{ __html: content }}
+              ref={contentDivRef}
+            />
+          </div>
+          <button
+            className={css({
+              display: isExpanded ? "none" : "inline-flex",
+              border: "none",
+              bg: "transparent",
               color: "blue.700",
-            },
-          })}
-          dangerouslySetInnerHTML={{ __html: content }}
-        />
+              cursor: "pointer",
+              _hover: {
+                textDecoration: "underline",
+              },
+            })}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsExpanded(true);
+            }}
+          >
+            Expand Truth
+          </button>
+        </div>
+
         {postdata.mediaAttachments.length !== 0 && (
           <div
             className={css({
