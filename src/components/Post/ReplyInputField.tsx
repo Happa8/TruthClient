@@ -1,6 +1,6 @@
 import { css, cx } from "@/styled-system/css";
 import { Collapsible } from "@ark-ui/react";
-import { FC, ReactNode } from "react";
+import { FC } from "react";
 
 type Props = {
   className?: string;

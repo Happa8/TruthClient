@@ -419,7 +419,7 @@ export const useTimeline = () => {
       `wss://truthsocial.com/api/v1/streaming?access_token=${accessToken}&stream=user`
     );
 
-    socketRef.current.addEventListener("open", (e) => {
+    socketRef.current.addEventListener("open", () => {
       // console.log("WebSocket connection opened.", e);
     });
 
@@ -455,7 +455,7 @@ export const useTimeline = () => {
       console.error("Websocket error:", e);
     });
 
-    socketRef.current.addEventListener("close", (e) => {
+    socketRef.current.addEventListener("close", () => {
       // console.log("WebSocket connection closed:", e);
     });
 

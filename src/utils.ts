@@ -39,10 +39,6 @@ export const checkQuote = (input: string): { id: string } | undefined => {
   };
 };
 
-const quotePattern = new RegExp(
-  `<span class=\\"quote-inline\\"><br/>RT: (.*?)</span>`
-);
-
 export const getContentFromPost = (input: string): string => {
   const parser = new DOMParser();
   const doc = parser.parseFromString(input, "text/html");
