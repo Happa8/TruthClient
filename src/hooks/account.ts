@@ -1,4 +1,4 @@
-import { useAtom, useAtomValue } from "jotai";
+import { useAtomValue } from "jotai";
 import { tokenAtom } from "../atoms";
 import { TAccount, convertAccount } from "./connection";
 import { useQuery } from "@tanstack/react-query";
