@@ -1,12 +1,12 @@
 import { FC, memo, useEffect, useState } from "react";
-import { TNotification, TNotificationAtom } from "../hooks/connection";
-import InnerPost from "./InnerPost";
-import { css } from "../../styled-system/css";
-import { calcTimeDelta } from "../utils";
+import { TNotification, TNotificationAtom } from "@/src/hooks/connection";
+import InnerPost from "@/src/components/Post/InnerPost";
+import { css } from "@/styled-system/css";
+import { calcTimeDelta } from "@/src/utils";
 import { MdFavorite, MdRepeat, MdPerson } from "react-icons/md";
 import { GoMention } from "react-icons/go";
 import { useAtom, useAtomValue } from "jotai";
-import { ColumnsAtom } from "../atoms";
+import { ColumnsAtom } from "@/src/atoms";
 
 type Props =
   | {

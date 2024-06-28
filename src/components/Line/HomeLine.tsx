@@ -1,14 +1,16 @@
-import { FC, useRef } from "react";
-import { css } from "../../styled-system/css";
+import { FC, memo, useRef } from "react";
+import { css } from "@/styled-system/css";
 import LineHeader from "./LineHeader";
 import LineWrapper from "./LineWrapper";
+import Post from "@/src/components/Post/Post";
+import { useTimeline } from "@/src/hooks/connection";
 import { VList, VListHandle } from "virtua";
-import { useTimeline } from "../hooks/connection";
-import Notification from "./Notification";
 
-const NoteLine: FC = () => {
-  const { notificationList, loadMoreNotifications, isFetchingNote } =
-    useTimeline();
+// type Props = {};
+
+const HomeLine: FC = () => {
+  const { postList, loadMoreTimeLine, isFetching } = useTimeline();
+
   const ListRef = useRef<VListHandle>(null);
 
   return (
@@ -22,11 +24,11 @@ const NoteLine: FC = () => {
           }
         }}
       >
-        Notification
+        Home
       </LineHeader>
       <VList style={{ width: "100%" }} ref={ListRef}>
-        {notificationList.map((note) => {
-          return <Notification noteDataAtom={note} key={note.toString()} />;
+        {postList.map((post, i) => {
+          return <Post key={i} dataAtom={post} />;
         })}
         <div
           className={css({
@@ -36,20 +38,21 @@ const NoteLine: FC = () => {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            bgColor: "gray.100",
             _hover: { bgColor: "gray.200" },
           })}
           onClick={() => {
-            if (!isFetchingNote) {
-              loadMoreNotifications();
+            if (!isFetching) {
+              loadMoreTimeLine();
             }
           }}
         >
-          <p>{isFetchingNote ? "Loading..." : "Click to load"}</p>
+          <p>{isFetching ? "Loading..." : "Click to load"}</p>
         </div>
       </VList>
     </LineWrapper>
   );
 };
 
-export default NoteLine;
+const memoizedHomeLine = memo(HomeLine);
+
+export default memoizedHomeLine;

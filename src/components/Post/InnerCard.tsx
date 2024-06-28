@@ -1,6 +1,6 @@
 import { FC } from "react";
-import { TCard } from "../hooks/connection";
-import { css } from "../../styled-system/css";
+import { TCard } from "@/src/hooks/connection";
+import { css } from "@/styled-system/css";
 import { MdLink } from "react-icons/md";
 
 type Props = {

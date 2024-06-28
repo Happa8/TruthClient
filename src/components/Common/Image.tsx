@@ -1,7 +1,7 @@
-import { TMedia } from "../hooks/connection";
+import { TMedia } from "@/src/hooks/connection";
 import * as hovercard from "@zag-js/hover-card";
 import { useMachine, normalizeProps, Portal } from "@zag-js/react";
-import { css } from "../../styled-system/css";
+import { css } from "@/styled-system/css";
 import { FC } from "react";
 
 type Props = {

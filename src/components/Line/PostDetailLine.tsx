@@ -1,11 +1,12 @@
 import { css } from "@/styled-system/css";
 import { FC, memo } from "react";
-import { TPost, usePost } from "../hooks/connection";
-import LineWrapper from "./LineWrapper";
+import { TPost, usePost } from "../../hooks/connection";
+import LineWrapper from "@/src/components/Line/LineWrapper";
 import LineHeader from "./LineHeader";
-import { ColumnsAtom } from "../atoms";
+import { ColumnsAtom } from "../../atoms";
 import { useAtom } from "jotai";
-import DetailPost from "./DetailPost";
+import DetailPost from "../Post/DetailPost";
+import LineContent from "./LineContent";
 
 type Props = {
   postId: string;
@@ -35,11 +36,13 @@ const PostDetailLine: FC<Props> = ({ postId, columnIndex }) => {
       >
         Post Detail
       </LineHeader>
-      {status === "success" ? (
-        <PostDetailLineCore data={data} />
-      ) : (
-        "Now Loading..."
-      )}
+      <LineContent>
+        {status === "success" ? (
+          <PostDetailLineCore data={data} />
+        ) : (
+          "Now Loading..."
+        )}
+      </LineContent>
     </LineWrapper>
   );
 };

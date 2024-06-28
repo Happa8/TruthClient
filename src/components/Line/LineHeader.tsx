@@ -1,5 +1,5 @@
 import { ComponentProps, FC, ReactNode } from "react";
-import { css } from "../../styled-system/css";
+import { css } from "@/styled-system/css";
 import { MdClose } from "react-icons/md";
 
 type Props = {

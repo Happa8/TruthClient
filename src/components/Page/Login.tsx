@@ -2,9 +2,9 @@ import { css, cx } from "@/styled-system/css";
 import { useAtom } from "jotai";
 import { FC, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { tokenAtom } from "../atoms";
-import { getToken, loginWithRedirect } from "../hooks/auth";
-import Button from "./Button";
+import { tokenAtom } from "@/src/atoms";
+import { getToken, loginWithRedirect } from "@/src/hooks/auth";
+import Button from "@/src/components/Common/Button";
 
 const Login: FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();

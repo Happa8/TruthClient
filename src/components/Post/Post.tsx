@@ -1,17 +1,17 @@
 import { FC, useEffect, useState } from "react";
-import { css } from "../../styled-system/css";
-import { TPostAtom, usePost } from "../hooks/connection";
+import { css } from "../../../styled-system/css";
+import { TPostAtom, usePost } from "../../hooks/connection";
 import Media from "./Media";
 import { MdOutlineModeComment, MdRepeat } from "react-icons/md";
-import { calcTimeDelta, getContentFromPost } from "../utils";
+import { calcTimeDelta, getContentFromPost } from "../../utils";
 import InnerPost from "./InnerPost";
 import InnerCard from "./InnerCard";
-import { useFavouritePost, useUnfavouritePost } from "../hooks/post";
+import { useFavouritePost, useUnfavouritePost } from "../../hooks/post";
 import FavouriteIconButton from "./FavouriteIconButton";
 import { useAtom } from "jotai";
 import RepostIconButton from "./RepostIconButton";
 import Avatar from "./Avatar";
-import { ColumnsAtom } from "../atoms";
+import { ColumnsAtom } from "../../atoms";
 
 type Props = {
   dataAtom: TPostAtom;
@@ -22,14 +22,19 @@ const Post: FC<Props> = ({ dataAtom }) => {
 
   const { refetch } = usePost({ id: data.id });
 
+  // RTかどうかを判定
   const isRepost = data.reblog !== null;
+  // RTならRT元のデータを、そうでなければそのままのデータを取得
   const postdata = data.reblog !== null ? data.reblog : data;
 
+  // 投稿の内容を取得（RTとかのデータを除去）
   const content = getContentFromPost(postdata.content);
 
+  // いいね機能のフック
   const { mutateAsync: favouritePost } = useFavouritePost();
   const { mutateAsync: unfavouritePost } = useUnfavouritePost();
 
+  // カラムの状態を管理するアトム
   const [_, dispatchColumn] = useAtom(ColumnsAtom);
 
   // テキストが選択されている／されていた直後はクリックイベントを発火させない
@@ -79,7 +84,7 @@ const Post: FC<Props> = ({ dataAtom }) => {
         }
       }}
     >
-      {isRepost ? (
+      {isRepost && (
         <p
           className={css({
             color: "gray.700",
@@ -106,8 +111,6 @@ const Post: FC<Props> = ({ dataAtom }) => {
           </span>
           &nbsp; ReTruthed
         </p>
-      ) : (
-        <></>
       )}
       <div className={css({ display: "flex", gap: 2, alignItems: "center" })}>
         <Avatar
