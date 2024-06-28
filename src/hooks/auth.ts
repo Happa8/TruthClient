@@ -1,3 +1,6 @@
+import { useAtom } from "jotai";
+import { tokenAtom } from "../atoms";
+
 export const loginWithRedirect = () => {
   const params = {
     client_id: import.meta.env.VITE_CLIENT_ID,
@@ -29,4 +32,12 @@ export const getToken = async (code: string) => {
     } = await res.json();
     return result;
   });
+};
+
+export const useLogout = () => {
+  const [accessToken, setAccessToken] = useAtom(tokenAtom);
+  return () => {
+    setAccessToken("");
+    localStorage.removeItem("access_token");
+  };
 };

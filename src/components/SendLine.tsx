@@ -3,10 +3,14 @@ import { ComponentProps, FC } from "react";
 import LineWrapper from "./LineWrapper";
 import LineHeader from "./LineHeader";
 import TruthSubmitForm from "./TruthSubmitForm";
+import Button from "./Button";
+import { useLogout } from "../hooks/auth";
 
 type Props = ComponentProps<"div">;
 
 const SendLine: FC<Props> = () => {
+  const logout = useLogout();
+
   return (
     <LineWrapper>
       <LineHeader>
@@ -35,6 +39,23 @@ const SendLine: FC<Props> = () => {
         })}
       >
         <TruthSubmitForm />
+        <div
+          className={css({
+            flexGrow: 1,
+            display: "flex",
+            flexDir: "column",
+            justifyContent: "flex-end",
+            padding: 2,
+          })}
+        >
+          <Button
+            onClick={() => {
+              logout();
+            }}
+          >
+            Logout
+          </Button>
+        </div>
       </div>
     </LineWrapper>
   );
