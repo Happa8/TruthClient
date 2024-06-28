@@ -420,7 +420,7 @@ export const useTimeline = () => {
     );
 
     socketRef.current.addEventListener("open", (e) => {
-      console.log("WebSocket connection opened.", e);
+      // console.log("WebSocket connection opened.", e);
     });
 
     socketRef.current.addEventListener("message", (event) => {
@@ -456,7 +456,7 @@ export const useTimeline = () => {
     });
 
     socketRef.current.addEventListener("close", (e) => {
-      console.log("WebSocket connection closed:", e);
+      // console.log("WebSocket connection closed:", e);
     });
 
     const socket = socketRef.current;

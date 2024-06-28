@@ -20,6 +20,8 @@ const Media: FC<Props> = ({ medias }) => {
         gridAutoFlow: "column",
         gap: 1,
         borderRadius: "sm",
+        borderWidth: 1,
+        borderColor: "gray.200",
       })}
     >
       {medias.map((m) => (

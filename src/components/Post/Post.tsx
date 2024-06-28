@@ -1,8 +1,8 @@
-import { FC, useEffect, useState } from "react";
-import { css } from "../../../styled-system/css";
+import { FC, useEffect, useRef, useState } from "react";
+import { css, cva } from "../../../styled-system/css";
 import { TPostAtom, usePost } from "../../hooks/connection";
 import Media from "./Media";
-import { MdOutlineModeComment, MdRepeat } from "react-icons/md";
+import { MdRepeat } from "react-icons/md";
 import { calcTimeDelta, getContentFromPost } from "../../utils";
 import InnerPost from "./InnerPost";
 import InnerCard from "./InnerCard";
@@ -12,10 +12,25 @@ import { useAtom } from "jotai";
 import RepostIconButton from "./RepostIconButton";
 import Avatar from "./Avatar";
 import { ColumnsAtom } from "../../atoms";
+import ReplyIconButton from "./ReplyIconButton";
 
 type Props = {
   dataAtom: TPostAtom;
 };
+
+const contentStyle = cva({
+  base: {},
+  variants: {
+    isShrinked: {
+      true: {
+        maxHeight: 200,
+        overflowY: "hidden",
+        maskImage: "linear-gradient(180deg, black 80%, transparent 100%)",
+      },
+      false: {},
+    },
+  },
+});
 
 const Post: FC<Props> = ({ dataAtom }) => {
   const [data, setData] = useAtom(dataAtom);
@@ -53,225 +68,269 @@ const Post: FC<Props> = ({ dataAtom }) => {
     };
   }, []);
 
+  // 投稿の展開状態を管理
+  const [isExpanded, setIsExpanded] = useState(false);
+  const contentDivRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const handleResize = () => {
+      if (contentDivRef.current) {
+        const height = contentDivRef.current.offsetHeight;
+        const threshold = 240;
+        setIsExpanded(height < threshold);
+      }
+    };
+
+    handleResize();
+  }, []);
+
   return (
     <div
       className={css({
         bgColor: "gray.100",
-        p: 2,
-        px: 4,
         borderY: "solid",
         borderYWidth: 1,
         borderColor: "gray.200",
         w: "100%",
         display: "flex",
         flexDir: "column",
-        gap: 2,
-        _hover: {
-          bgColor: "gray.200",
-        },
-        cursor: "pointer",
+        gap: 0,
       })}
-      key={postdata.id}
-      onClick={() => {
-        if (!isSelecting) {
-          dispatchColumn({
-            type: "push",
-            value: {
-              type: "PostDetail",
-              postId: postdata.id,
-            },
-          });
-        }
-      }}
     >
-      {isRepost && (
-        <p
-          className={css({
-            color: "gray.700",
-            fontSize: "small",
-            display: "inline-flex",
-            alignItems: "center",
-            flexFlow: "wrap",
-          })}
-        >
-          <span
-            className={css({
-              fontSize: "sm",
-              marginRight: 2,
-            })}
-          >
-            <MdRepeat />
-          </span>
-          <span
-            className={css({
-              fontWeight: "bold",
-            })}
-          >
-            {data.account.name}
-          </span>
-          &nbsp; ReTruthed
-        </p>
-      )}
-      <div className={css({ display: "flex", gap: 2, alignItems: "center" })}>
-        <Avatar
-          mainImg={
-            postdata.group ? postdata.group.avatar : postdata.account.avatar
+      <div
+        className={css({
+          p: 2,
+          px: 4,
+          w: "100%",
+          display: "flex",
+          flexDir: "column",
+          gap: 2,
+          cursor: "pointer",
+          _hover: {
+            bgColor: "gray.200",
+          },
+        })}
+        onClick={() => {
+          if (!isSelecting) {
+            dispatchColumn({
+              type: "push",
+              value: {
+                type: "PostDetail",
+                postId: postdata.id,
+              },
+            });
           }
-          subImg={postdata.group && postdata.account.avatar}
-        />
-        <div
-          className={css({
-            display: "flex",
-            flexDir: "column",
-            lineHeight: "none",
-            gap: 1,
-          })}
-        >
-          <p>
+        }}
+      >
+        {isRepost && (
+          <p
+            className={css({
+              color: "gray.700",
+              fontSize: "small",
+              display: "inline-flex",
+              alignItems: "center",
+              flexFlow: "wrap",
+            })}
+          >
+            <span
+              className={css({
+                fontSize: "sm",
+                marginRight: 2,
+              })}
+            >
+              <MdRepeat />
+            </span>
             <span
               className={css({
                 fontWeight: "bold",
-                color: "gray.900",
               })}
             >
-              {postdata.group
-                ? postdata.group.displayName
-                : postdata.account.name}
+              {data.account.name}
             </span>
+            &nbsp; ReTruthed
           </p>
-          <p>
-            <span
-              className={css({
-                fontSize: "small",
-                color: "gray.700",
-              })}
-            >
-              {postdata.group && "posted by "}
-              <a
-                href={postdata.account.url}
-                target="_blank"
-                onClick={(e) => {
-                  e.stopPropagation();
-                }}
-              >
-                @{postdata.account.userName}
-              </a>
-            </span>
-            <span
-              className={css({
-                fontSize: "small",
-                color: "gray.700",
-              })}
-            >
-              <a
-                href={postdata.url}
-                target="_blank"
-                onClick={(e) => {
-                  e.stopPropagation();
-                }}
-              >
-                ・{calcTimeDelta(postdata.createdAt)}
-              </a>
-            </span>
-          </p>
-        </div>
-      </div>
-      {postdata.inReplyTo !== undefined && (
-        <div>
-          <p
+        )}
+        <div className={css({ display: "flex", gap: 2, alignItems: "center" })}>
+          <Avatar
+            mainImg={
+              postdata.group ? postdata.group.avatar : postdata.account.avatar
+            }
+            subImg={postdata.group && postdata.account.avatar}
+          />
+          <div
             className={css({
-              fontSize: "small",
-              color: "gray.700",
+              display: "flex",
+              flexDir: "column",
+              lineHeight: "none",
+              gap: 1,
             })}
           >
-            Replying to{" "}
-            {postdata.mentions.map((m) => (
+            <p>
               <span
                 className={css({
-                  color: "green.700",
+                  fontWeight: "bold",
+                  color: "gray.900",
                 })}
-                key={m.id}
               >
-                @{m.username}&nbsp;
+                {postdata.group
+                  ? postdata.group.displayName
+                  : postdata.account.name}
               </span>
-            ))}
-          </p>
+            </p>
+            <p>
+              <span
+                className={css({
+                  fontSize: "small",
+                  color: "gray.700",
+                })}
+              >
+                {postdata.group && "posted by "}
+                <a
+                  href={postdata.account.url}
+                  target="_blank"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                >
+                  @{postdata.account.userName}
+                </a>
+              </span>
+              <span
+                className={css({
+                  fontSize: "small",
+                  color: "gray.700",
+                })}
+              >
+                <a
+                  href={postdata.url}
+                  target="_blank"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                >
+                  ・{calcTimeDelta(postdata.createdAt)}
+                </a>
+              </span>
+            </p>
+          </div>
         </div>
-      )}
-      <div
-        className={css({
-          "& p a.hashtag": {
-            color: "green.700",
-          },
-          "& p a": {
-            color: "blue.700",
-          },
-        })}
-        dangerouslySetInnerHTML={{ __html: content }}
-      />
-      {postdata.mediaAttachments.length !== 0 && (
-        <div
-          className={css({
-            px: 10,
-            py: 3,
-          })}
-        >
-          <Media medias={postdata.mediaAttachments} />
+        {postdata.inReplyTo !== undefined && (
+          <div>
+            <p
+              className={css({
+                fontSize: "small",
+                color: "gray.700",
+              })}
+            >
+              Replying to {postdata.mentions.length == 0 && <span>post</span>}
+              {postdata.mentions.map((m) => (
+                <span
+                  className={css({
+                    color: "green.700",
+                  })}
+                  key={m.id}
+                >
+                  @{m.username}&nbsp;
+                </span>
+              ))}
+            </p>
+          </div>
+        )}
+        <div>
+          <div
+            className={contentStyle({
+              isShrinked: !isExpanded,
+            })}
+          >
+            <div
+              className={css({
+                "& p a.hashtag": {
+                  color: "green.700",
+                },
+                "& p a": {
+                  color: "blue.700",
+                },
+              })}
+              dangerouslySetInnerHTML={{ __html: content }}
+              ref={contentDivRef}
+            />
+          </div>
+          <button
+            className={css({
+              display: isExpanded ? "none" : "inline-flex",
+              border: "none",
+              bg: "transparent",
+              color: "blue.700",
+              cursor: "pointer",
+              _hover: {
+                textDecoration: "underline",
+              },
+            })}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsExpanded(true);
+            }}
+          >
+            Expand Truth
+          </button>
         </div>
-      )}
-      {postdata.quote !== undefined && <InnerPost postdata={postdata.quote} />}
-      {postdata.card !== undefined && <InnerCard carddata={postdata.card} />}
-      <p
-        className={css({
-          display: "inline-flex",
-          gap: 6,
-          fontSize: "sm",
-          color: "gray.700",
-        })}
-        onClick={(e) => {
-          e.stopPropagation();
-        }}
-      >
-        <span
+
+        {postdata.mediaAttachments.length !== 0 && (
+          <div
+            className={css({
+              px: 10,
+              py: 3,
+            })}
+          >
+            <Media medias={postdata.mediaAttachments} />
+          </div>
+        )}
+        {postdata.quote !== undefined && (
+          <InnerPost postdata={postdata.quote} />
+        )}
+        {postdata.card !== undefined && <InnerCard carddata={postdata.card} />}
+        <p
           className={css({
             display: "inline-flex",
-            alignItems: "center",
-            gap: 1,
+            gap: 6,
+            fontSize: "sm",
+            color: "gray.700",
           })}
-        >
-          <MdOutlineModeComment /> {postdata.repliesCount}
-        </span>
-
-        <RepostIconButton dataAtom={dataAtom} />
-        <FavouriteIconButton
-          count={postdata.favouritesCount}
-          isFavourite={postdata.favourited}
-          onClick={() => {
-            setData({
-              ...data,
-              favourited: !postdata.favourited,
-              favouritesCount: postdata.favourited
-                ? postdata.favouritesCount > 0
-                  ? postdata.favouritesCount - 1
-                  : postdata.favouritesCount
-                : postdata.favouritesCount + 1,
-            });
-            if (!postdata.favourited) {
-              favouritePost({ id: postdata.id }).then(() => {
-                refetch().then((data) => {
-                  if (data.data !== undefined) setData(data.data);
-                });
-              });
-            } else {
-              unfavouritePost({ id: postdata.id }).then(() => {
-                refetch().then((data) => {
-                  if (data.data !== undefined) setData(data.data);
-                });
-              });
-            }
+          onClick={(e) => {
+            e.stopPropagation();
           }}
-        />
-      </p>
+        >
+          <ReplyIconButton dataAtom={dataAtom} />
+          <RepostIconButton dataAtom={dataAtom} />
+          <FavouriteIconButton
+            count={postdata.favouritesCount}
+            isFavourite={postdata.favourited}
+            onClick={() => {
+              setData({
+                ...data,
+                favourited: !postdata.favourited,
+                favouritesCount: postdata.favourited
+                  ? postdata.favouritesCount > 0
+                    ? postdata.favouritesCount - 1
+                    : postdata.favouritesCount
+                  : postdata.favouritesCount + 1,
+              });
+              if (!postdata.favourited) {
+                favouritePost({ id: postdata.id }).then(() => {
+                  refetch().then((data) => {
+                    if (data.data !== undefined) setData(data.data);
+                  });
+                });
+              } else {
+                unfavouritePost({ id: postdata.id }).then(() => {
+                  refetch().then((data) => {
+                    if (data.data !== undefined) setData(data.data);
+                  });
+                });
+              }
+            }}
+          />
+        </p>
+      </div>
     </div>
   );
 };
