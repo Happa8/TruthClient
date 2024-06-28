@@ -1,6 +1,6 @@
-import { css, cx } from "@/styled-system/css";
-import { FC, ReactNode, Suspense } from "react";
-import { TPost, useGetPostSuspense } from "../hooks/connection";
+import { css } from "@/styled-system/css";
+import { FC, Suspense } from "react";
+import { TPost } from "../hooks/connection";
 import { getContentFromPost } from "../utils";
 import Avatar from "./Avatar";
 import Media from "./Media";

@@ -1,7 +1,7 @@
 import { css, cx } from "@/styled-system/css";
-import { FC, useMemo } from "react";
+import { FC } from "react";
 import TextArea from "./TextArea";
-import { Atom, atom, useAtom, useAtomValue } from "jotai";
+import { atom, useAtom, useAtomValue } from "jotai";
 import { usePostTruth } from "../hooks/post";
 import { QuotePostAtom, useNullableAtomValue } from "../atoms";
 import InnerPost from "./InnerPost";

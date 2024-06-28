@@ -1,5 +1,5 @@
-import { css, cx } from "@/styled-system/css";
-import { ComponentProps, FC, ReactNode } from "react";
+import { css } from "@/styled-system/css";
+import { FC, ReactNode } from "react";
 import { Menu as ArkMenu } from "@ark-ui/react";
 
 type Props = {

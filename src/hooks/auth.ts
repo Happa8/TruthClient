@@ -35,7 +35,7 @@ export const getToken = async (code: string) => {
 };
 
 export const useLogout = () => {
-  const [accessToken, setAccessToken] = useAtom(tokenAtom);
+  const [_accessToken, setAccessToken] = useAtom(tokenAtom);
   return () => {
     setAccessToken("");
     localStorage.removeItem("access_token");

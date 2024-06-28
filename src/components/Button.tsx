@@ -1,5 +1,5 @@
 import { css, cx } from "@/styled-system/css";
-import { ComponentProps, FC, ReactNode } from "react";
+import { ComponentProps, FC } from "react";
 
 type Props = ComponentProps<"button">;
 

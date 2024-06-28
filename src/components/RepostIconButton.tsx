@@ -1,5 +1,5 @@
-import { css, cva, cx } from "@/styled-system/css";
-import { FC, ReactNode } from "react";
+import { cva } from "@/styled-system/css";
+import { FC } from "react";
 import { TPostAtom } from "../hooks/connection";
 import { useAtom } from "jotai";
 import Menu, { MenuItem } from "./Menu";

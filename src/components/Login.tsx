@@ -1,6 +1,6 @@
 import { css, cx } from "@/styled-system/css";
 import { useAtom } from "jotai";
-import { FC, ReactNode, useEffect } from "react";
+import { FC, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { tokenAtom } from "../atoms";
 import { getToken, loginWithRedirect } from "../hooks/auth";
@@ -8,7 +8,7 @@ import Button from "./Button";
 
 const Login: FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [accessToken, setAccessToken] = useAtom(tokenAtom);
+  const [_accessToken, setAccessToken] = useAtom(tokenAtom);
 
   useEffect(() => {
     console.log(searchParams.get("code"));

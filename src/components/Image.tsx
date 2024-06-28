@@ -2,7 +2,7 @@ import { TMedia } from "../hooks/connection";
 import * as hovercard from "@zag-js/hover-card";
 import { useMachine, normalizeProps, Portal } from "@zag-js/react";
 import { css } from "../../styled-system/css";
-import { FC, useState } from "react";
+import { FC } from "react";
 
 type Props = {
   data: TMedia;
@@ -11,7 +11,7 @@ type Props = {
 const Image: FC<Props> = ({ data }) => {
   const [state, send] = useMachine(hovercard.machine({ id: data.id }));
   const api = hovercard.connect(state, send, normalizeProps);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  // const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   return (
     <>

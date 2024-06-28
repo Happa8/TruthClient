@@ -1,7 +1,6 @@
 import { FC } from "react";
 import HomeLine from "./HomeLine";
 import NoteLine from "./NoteLine";
-import { TPost, TPostAtom } from "../hooks/connection";
 
 type Column =
   | {

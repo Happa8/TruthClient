@@ -4,15 +4,8 @@ import {
   useQuery,
   useSuspenseQuery,
 } from "@tanstack/react-query";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  Atom,
-  PrimitiveAtom,
-  WritableAtom,
-  atom,
-  useAtom,
-  useAtomValue,
-} from "jotai";
+import { useCallback, useEffect, useMemo, useRef } from "react";
+import { Atom, PrimitiveAtom, atom, useAtom, useAtomValue } from "jotai";
 import { tokenAtom } from "../atoms";
 
 export type TAccount = {
@@ -232,7 +225,7 @@ const convertNotification = (data: any): TNotification => {
   return notification;
 };
 
-const updateArray = <T extends { id: string }>(
+export const updateArray = <T extends { id: string }>(
   obj: T,
   objArray: T[],
   direction: "FI" | "LI" = "FI"

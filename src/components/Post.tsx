@@ -1,15 +1,14 @@
 import { FC, useEffect, useState } from "react";
 import { css } from "../../styled-system/css";
-import { TPost, TPostAtom, usePost } from "../hooks/connection";
+import { TPostAtom, usePost } from "../hooks/connection";
 import Media from "./Media";
 import { MdOutlineModeComment, MdRepeat } from "react-icons/md";
-import { calcTimeDelta, getContentFromPost, quotePattern } from "../utils";
+import { calcTimeDelta, getContentFromPost } from "../utils";
 import InnerPost from "./InnerPost";
 import InnerCard from "./InnerCard";
-import { useFavouritePost, useRepost, useUnfavouritePost } from "../hooks/post";
+import { useFavouritePost, useUnfavouritePost } from "../hooks/post";
 import FavouriteIconButton from "./FavouriteIconButton";
 import { useAtom } from "jotai";
-import Menu, { MenuItem } from "./Menu";
 import RepostIconButton from "./RepostIconButton";
 import Avatar from "./Avatar";
 import { ColumnsAtom } from "../atoms";
