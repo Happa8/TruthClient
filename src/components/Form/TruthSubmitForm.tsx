@@ -1,9 +1,13 @@
 import { css, cx } from "@/styled-system/css";
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import TextArea from "@/src/components/Common/TextArea";
 import { atom, useAtom, useAtomValue } from "jotai";
 import { usePostTruth } from "@/src/hooks/post";
-import { QuotePostAtom, useNullableAtomValue } from "@/src/atoms";
+import {
+  QuotePostAtom,
+  ReplyPostAtom,
+  useNullableAtomValue,
+} from "@/src/atoms";
 import InnerPost from "@/src/components/Post/InnerPost";
 import { MdCancel } from "react-icons/md";
 
@@ -17,24 +21,59 @@ const truthTextCountAtom = atom<number>(
 );
 
 const TruthSubmitForm: FC<Props> = ({ className }) => {
+  // 入力管理
   const [truthText, setTruthText] = useAtom(truthTextAtom);
   const truthTextCount = useAtomValue(truthTextCountAtom);
 
+  // 引用投稿
   const [quotePostAtom, setQuotePostAtom] = useAtom(QuotePostAtom);
   const quotePost = useNullableAtomValue(quotePostAtom);
 
+  // リプライ投稿
+  const [replyPostAtom, setReplyPostAtom] = useAtom(ReplyPostAtom);
+  const _replyPost = useNullableAtomValue(replyPostAtom);
+  const replyPost =
+    _replyPost?.reblog !== null ? _replyPost?.reblog : _replyPost;
+
+  const [replyToAccounts, setReplyToAccounts] = useState<string[]>(
+    replyPost
+      ? replyPost.mentions.length > 0
+        ? replyPost.mentions.map((mention) => mention.username)
+        : [replyPost.account.userName]
+      : []
+  );
+
+  // replyPostに更新があったら、replyToAccountsを更新
+  useEffect(() => {
+    setReplyToAccounts(
+      replyPost
+        ? replyPost.mentions.length > 0
+          ? replyPost.mentions.map((mention) => mention.username)
+          : [replyPost.account.userName]
+        : []
+    );
+  }, [replyPost]);
+
+  // 投稿処理のためのフック
   const { mutateAsync, status } = usePostTruth();
 
+  // 投稿処理
   const onSubmit = () => {
     mutateAsync({
       content: truthText,
       quoteId: quotePost?.id,
+      replyId: replyPost?.id,
+      replyAccountUserNames:
+        replyToAccounts.length > 0 ? replyToAccounts : undefined,
     }).then(() => {
       setTruthText("");
       setQuotePostAtom(null);
+      setReplyPostAtom(null);
+      setReplyToAccounts([]);
     });
   };
 
+  // 投稿のショートカット
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
       onSubmit();
@@ -58,6 +97,81 @@ const TruthSubmitForm: FC<Props> = ({ className }) => {
         onSubmit();
       }}
     >
+      {replyPostAtom && (
+        <div
+          className={css({
+            display: "flex",
+            flexDir: "column",
+            gap: 2,
+          })}
+        >
+          <div
+            className={css({
+              position: "relative",
+            })}
+          >
+            <InnerPost postdataAtom={replyPostAtom} />
+            <button
+              type="button"
+              className={css({
+                position: "absolute",
+                top: 0,
+                right: 0,
+                padding: 2,
+                cursor: "pointer",
+                color: "gray.400",
+              })}
+              onClick={() => {
+                setReplyPostAtom(null);
+              }}
+            >
+              <MdCancel />
+            </button>
+          </div>
+          <p
+            className={css({
+              fontSize: "sm",
+              color: "gray.600",
+              px: 1,
+            })}
+          >
+            Reply to&nbsp;
+            {replyToAccounts.length === 0 && "the post"}
+            {replyToAccounts.map((account) => (
+              <span
+                className={css({
+                  display: "inline-flex",
+                  alignItems: "center",
+                })}
+              >
+                <span
+                  className={css({
+                    color: "green.700",
+                  })}
+                >
+                  @{account}&nbsp;
+                </span>
+                <span
+                  className={css({
+                    color: "gray.400",
+                    cursor: "pointer",
+                    _hover: { color: "gray.600" },
+                  })}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setReplyToAccounts(
+                      replyToAccounts.filter((a) => a !== account)
+                    );
+                  }}
+                >
+                  <MdCancel />
+                </span>
+              </span>
+            ))}
+          </p>
+        </div>
+      )}
+
       <TextArea
         value={truthText}
         onChange={(e) => setTruthText(e.target.value)}

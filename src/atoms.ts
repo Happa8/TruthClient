@@ -17,6 +17,8 @@ export const useNullableAtomValue = <T>(
 
 export const QuotePostAtom = atom<TPostAtom | null>(null);
 
+export const ReplyPostAtom = atom<TPostAtom | null>(null);
+
 export type ArrayReducerAction<T> =
   | {
       type: "push";

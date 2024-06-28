@@ -13,6 +13,7 @@ import RepostIconButton from "./RepostIconButton";
 import Avatar from "./Avatar";
 import { ColumnsAtom } from "../../atoms";
 import ReplyInputField from "./ReplyInputField";
+import ReplyIconButton from "./ReplyIconButton";
 
 type Props = {
   dataAtom: TPostAtom;
@@ -37,8 +38,6 @@ const Post: FC<Props> = ({ dataAtom }) => {
 
   // カラムの状態を管理するアトム
   const [_, dispatchColumn] = useAtom(ColumnsAtom);
-
-  const [isOpenReplyInput, setIsOpenReplyInput] = useState(false);
 
   // テキストが選択されている／されていた直後はクリックイベントを発火させない
   const [isSelecting, setIsSelecting] = useState(false);
@@ -194,7 +193,7 @@ const Post: FC<Props> = ({ dataAtom }) => {
                 color: "gray.700",
               })}
             >
-              Replying to{" "}
+              Replying to {postdata.mentions.length == 0 && <span>post</span>}
               {postdata.mentions.map((m) => (
                 <span
                   className={css({
@@ -244,20 +243,7 @@ const Post: FC<Props> = ({ dataAtom }) => {
             e.stopPropagation();
           }}
         >
-          <span
-            className={css({
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 1,
-            })}
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsOpenReplyInput((prev) => !prev);
-            }}
-          >
-            <MdOutlineModeComment /> {postdata.repliesCount}
-          </span>
-
+          <ReplyIconButton dataAtom={dataAtom} />
           <RepostIconButton dataAtom={dataAtom} />
           <FavouriteIconButton
             count={postdata.favouritesCount}
@@ -289,7 +275,6 @@ const Post: FC<Props> = ({ dataAtom }) => {
           />
         </p>
       </div>
-      <ReplyInputField open={isOpenReplyInput} />
     </div>
   );
 };

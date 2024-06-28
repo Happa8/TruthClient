@@ -6,6 +6,8 @@ import { TPost, convertPost } from "./connection";
 export type TPostSend = {
   content: string;
   quoteId?: string;
+  replyId?: string;
+  replyAccountUserNames?: string[];
 };
 
 export const postTruth = async (
@@ -21,6 +23,8 @@ export const postTruth = async (
     body: JSON.stringify({
       status: data.content,
       quote_id: data.quoteId,
+      in_reply_to_id: data.replyId,
+      to: data.replyAccountUserNames,
     }),
   })
     .then((res) => res.json())
