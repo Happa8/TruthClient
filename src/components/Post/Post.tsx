@@ -107,7 +107,7 @@ const Post: FC<Props> = ({ dataAtom }) => {
               fontWeight: "bold",
             })}
           >
-            {data.account.displayName}
+            {data.account.name}
           </span>
           &nbsp; ReTruthed
         </p>
@@ -154,7 +154,7 @@ const Post: FC<Props> = ({ dataAtom }) => {
                   e.stopPropagation();
                 }}
               >
-                @{postdata.account.name}
+                @{postdata.account.userName}
               </a>
             </span>
             <span
