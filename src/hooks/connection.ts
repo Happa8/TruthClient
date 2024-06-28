@@ -11,6 +11,7 @@ import { useGetMuteAccounts } from "./account";
 
 export type TAccount = {
   id: string;
+  name: string;
   userName: string;
   displayName: string;
   avatar: string;
@@ -141,6 +142,7 @@ export const convertAccount = (data: any): TAccount => {
     url: data.url,
     userName: data.username,
     website: data.website,
+    name: data.display_name !== "" ? data.display_name : data.username,
   };
 
   return account;

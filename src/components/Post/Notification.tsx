@@ -139,7 +139,7 @@ const NotificationCore: FC<{
           />
         </span>
         <span className={css({ fontWeight: "bold" })}>
-          {noteData.account.displayName}
+          {noteData.account.name}
         </span>
         &nbsp;
         <span>{describeNote(noteData.type)}</span>&nbsp;
