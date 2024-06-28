@@ -46,7 +46,7 @@ const InnerPostCore: FC<{ postdata: TPost; showCard?: boolean }> = ({
     >
       <p className={css({ color: "gray.700" })}>
         <span className={css({ fontWeight: "bold" })}>
-          {postdata.account.displayName}&nbsp;
+          {postdata.account.name}&nbsp;
         </span>
         <span>
           @{postdata.account.userName}・{calcTimeDelta(postdata.createdAt)}
