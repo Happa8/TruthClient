@@ -1,17 +1,17 @@
 import { FC, useEffect, useState } from "react";
-import { css } from "../../styled-system/css";
-import { TPostAtom, usePost } from "../hooks/connection";
+import { css } from "../../../styled-system/css";
+import { TPostAtom, usePost } from "../../hooks/connection";
 import Media from "./Media";
 import { MdOutlineModeComment, MdRepeat } from "react-icons/md";
-import { calcTimeDelta, getContentFromPost } from "../utils";
+import { calcTimeDelta, getContentFromPost } from "../../utils";
 import InnerPost from "./InnerPost";
 import InnerCard from "./InnerCard";
-import { useFavouritePost, useUnfavouritePost } from "../hooks/post";
+import { useFavouritePost, useUnfavouritePost } from "../../hooks/post";
 import FavouriteIconButton from "./FavouriteIconButton";
 import { useAtom } from "jotai";
 import RepostIconButton from "./RepostIconButton";
 import Avatar from "./Avatar";
-import { ColumnsAtom } from "../atoms";
+import { ColumnsAtom } from "../../atoms";
 
 type Props = {
   dataAtom: TPostAtom;

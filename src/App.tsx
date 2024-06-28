@@ -4,7 +4,7 @@ import HomeLine from "./components/HomeLine";
 import NoteLine from "./components/NoteLine";
 import SendLine from "./components/SendLine";
 import { ColumnsAtom, tokenAtom } from "./atoms";
-import PostDetailLine from "./components/PostDetailLine";
+import PostDetailLine from "./components/Line/PostDetailLine";
 import Login from "./components/Login";
 
 function App() {

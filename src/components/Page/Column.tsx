@@ -1,6 +1,6 @@
 import { FC } from "react";
-import HomeLine from "./HomeLine";
-import NoteLine from "./NoteLine";
+import HomeLine from "@/src/components/Line/HomeLine";
+import NoteLine from "@/src/components/Line/NoteLine";
 
 type Column =
   | {

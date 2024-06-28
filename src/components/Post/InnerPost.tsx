@@ -1,10 +1,10 @@
 import { FC } from "react";
-import { TPost, TPostAtom, usePost } from "../hooks/connection";
-import { css } from "../../styled-system/css";
+import { TPost, TPostAtom, usePost } from "../../hooks/connection";
+import { css } from "../../../styled-system/css";
 import InnerCard from "./InnerCard";
-import { calcTimeDelta } from "../utils";
+import { calcTimeDelta } from "../../utils";
 import { useAtom, useAtomValue } from "jotai";
-import { ColumnsAtom } from "../atoms";
+import { ColumnsAtom } from "../../atoms";
 
 type Props = (
   | { id: string }

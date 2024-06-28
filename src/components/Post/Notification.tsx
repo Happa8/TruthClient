@@ -1,6 +1,6 @@
 import { FC, memo, useEffect, useState } from "react";
 import { TNotification, TNotificationAtom } from "../hooks/connection";
-import InnerPost from "./InnerPost";
+import InnerPost from "./Post/InnerPost";
 import { css } from "../../styled-system/css";
 import { calcTimeDelta } from "../utils";
 import { MdFavorite, MdRepeat, MdPerson } from "react-icons/md";

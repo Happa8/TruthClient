@@ -1,7 +1,7 @@
 import { Atom, atom, useAtomValue } from "jotai";
 import { TNotification, TPostAtom } from "./hooks/connection";
 import { useMemo } from "react";
-import Column from "./components/Column";
+import Column from "./components/Page/Column";
 import { atomWithReducer } from "jotai/utils";
 
 export const tokenAtom = atom<string>("");

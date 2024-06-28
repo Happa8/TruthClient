@@ -1,7 +1,7 @@
 import { css } from "@/styled-system/css";
 import { FC, Suspense } from "react";
-import { TPost } from "../hooks/connection";
-import { getContentFromPost } from "../utils";
+import { TPost } from "@/src/hooks/connection";
+import { getContentFromPost } from "@/src//utils";
 import Avatar from "./Avatar";
 import Media from "./Media";
 import InnerPost from "./InnerPost";

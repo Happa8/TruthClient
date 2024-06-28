@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { css } from "../../styled-system/css";
 import { TMedia } from "../hooks/connection";
-import Image from "./Image";
+import Image from "./Common/Image";
 
 type Props = {
   medias: TMedia[];

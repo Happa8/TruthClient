@@ -3,7 +3,7 @@ import { ComponentProps, FC } from "react";
 import LineWrapper from "./LineWrapper";
 import LineHeader from "./LineHeader";
 import TruthSubmitForm from "./TruthSubmitForm";
-import Button from "./Button";
+import Button from "./Common/Button";
 import { useLogout } from "../hooks/auth";
 
 type Props = ComponentProps<"div">;

@@ -4,7 +4,7 @@ import { FC, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { tokenAtom } from "../atoms";
 import { getToken, loginWithRedirect } from "../hooks/auth";
-import Button from "./Button";
+import Button from "./Common/Button";
 
 const Login: FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();

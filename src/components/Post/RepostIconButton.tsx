@@ -2,7 +2,7 @@ import { cva } from "@/styled-system/css";
 import { FC } from "react";
 import { TPostAtom } from "../hooks/connection";
 import { useAtom } from "jotai";
-import Menu, { MenuItem } from "./Menu";
+import Menu, { MenuItem } from "./Common/Menu";
 import { MdRepeat } from "react-icons/md";
 import { useRepost } from "../hooks/post";
 import { QuotePostAtom } from "../atoms";
