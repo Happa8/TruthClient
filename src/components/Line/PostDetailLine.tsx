@@ -6,6 +6,7 @@ import LineHeader from "./LineHeader";
 import { ColumnsAtom } from "../../atoms";
 import { useAtom } from "jotai";
 import DetailPost from "../Post/DetailPost";
+import LineContent from "./LineContent";
 
 type Props = {
   postId: string;
@@ -35,11 +36,13 @@ const PostDetailLine: FC<Props> = ({ postId, columnIndex }) => {
       >
         Post Detail
       </LineHeader>
-      {status === "success" ? (
-        <PostDetailLineCore data={data} />
-      ) : (
-        "Now Loading..."
-      )}
+      <LineContent>
+        {status === "success" ? (
+          <PostDetailLineCore data={data} />
+        ) : (
+          "Now Loading..."
+        )}
+      </LineContent>
     </LineWrapper>
   );
 };
