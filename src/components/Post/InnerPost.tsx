@@ -2,7 +2,7 @@ import { FC } from "react";
 import { TPost, TPostAtom, usePost } from "../../hooks/connection";
 import { css } from "../../../styled-system/css";
 import InnerCard from "./InnerCard";
-import { calcTimeDelta } from "../../utils";
+import { calcTimeDelta, getContentFromPost } from "../../utils";
 import { useAtom, useAtomValue } from "jotai";
 import { ColumnsAtom } from "../../atoms";
 
@@ -54,7 +54,9 @@ const InnerPostCore: FC<{ postdata: TPost; showCard?: boolean }> = ({
       </p>
       <div
         className={css({ color: "gray.700" })}
-        dangerouslySetInnerHTML={{ __html: postdata.content }}
+        dangerouslySetInnerHTML={{
+          __html: getContentFromPost(postdata.content),
+        }}
       />
       {postdata.card !== undefined && showCard ? (
         <InnerCard carddata={postdata.card} />

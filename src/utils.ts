@@ -39,10 +39,17 @@ export const checkQuote = (input: string): { id: string } | undefined => {
   };
 };
 
-export const quotePattern = new RegExp(
+const quotePattern = new RegExp(
   `<span class=\\"quote-inline\\"><br/>RT: (.*?)</span>`
 );
 
 export const getContentFromPost = (input: string): string => {
-  return input.replace(quotePattern, "");
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(input, "text/html");
+  const spansToRemove = doc.querySelectorAll("span.quote-inline");
+  spansToRemove.forEach((span) => {
+    span.remove();
+  });
+
+  return doc.body.innerHTML;
 };
