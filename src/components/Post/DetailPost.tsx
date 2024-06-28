@@ -97,7 +97,17 @@ const DetailPostCore: FC<Props> = ({ data }) => {
           color: "gray.500",
         })}
       >
-        <p>{postdata.createdAt.toLocaleString()}</p>
+        <p>
+          <a
+            href={postdata.url}
+            target="_blank"
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            {postdata.createdAt.toLocaleString()}
+          </a>
+        </p>
       </div>
 
       <p
