@@ -136,7 +136,7 @@ const Post: FC<Props> = ({ dataAtom }) => {
             >
               {postdata.group
                 ? postdata.group.displayName
-                : postdata.account.displayName}
+                : postdata.account.name}
             </span>
           </p>
           <p>
@@ -154,7 +154,7 @@ const Post: FC<Props> = ({ dataAtom }) => {
                   e.stopPropagation();
                 }}
               >
-                @{postdata.account.userName}
+                @{postdata.account.name}
               </a>
             </span>
             <span
