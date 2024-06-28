@@ -39,7 +39,7 @@ const HomeLine: FC = () => {
 
     // 以前の高さと現在の高さを比較して、増えた文だけ現在のスクロール位置を巻き戻す
     const currentHeight = ListRef.current.scrollSize;
-    const currentPos = ListRef.current.scrollOffset;
+    // const currentPos = ListRef.current.scrollOffset;
     // TODO:なんかうまくいかない
     // ListRef.current.scrollBy(-(currentHeight - prevHeightRef.current));
 
