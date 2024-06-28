@@ -7,6 +7,7 @@ import {
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { Atom, PrimitiveAtom, atom, useAtom, useAtomValue } from "jotai";
 import { tokenAtom } from "../atoms";
+import { useGetMuteAccounts } from "./account";
 
 export type TAccount = {
   id: string;
@@ -125,7 +126,7 @@ const convertMedia = (data: any): TMedia => {
   return media;
 };
 
-const convertAccount = (data: any): TAccount => {
+export const convertAccount = (data: any): TAccount => {
   const account: TAccount = {
     avatar: data.avatar,
     bot: data.bot,
@@ -327,6 +328,8 @@ export const useCorrectAllValues = <T>(
 export const useTimeline = () => {
   const [accessToken] = useAtom(tokenAtom);
 
+  const { data: muteAccounts } = useGetMuteAccounts();
+
   const postListAtom = useMemo(() => atom<TPostAtom[]>([]), []);
   const updatePostListAtom = useUpdateListAtom(postListAtom);
   const [_a, updatePostList] = useAtom(updatePostListAtom);
@@ -361,6 +364,7 @@ export const useTimeline = () => {
     queryFn: fetchHome,
     initialPageParam: "",
     getNextPageParam: (lastPage) => lastPage[lastPage.length - 1].id,
+    staleTime: 1000,
   });
 
   const fetchNotification = useCallback(
@@ -387,19 +391,24 @@ export const useTimeline = () => {
     queryFn: fetchNotification,
     initialPageParam: "",
     getNextPageParam: (lastPage) => lastPage[lastPage.length - 1].id,
+    staleTime: 1000,
   });
 
   useEffect(() => {
     data?.pages.flat().map((d) => {
       const newPost = convertPost(d);
-      updatePostList(newPost, "LI");
+      if (!muteAccounts?.find((account) => account.id === newPost.account.id)) {
+        updatePostList(newPost, "LI");
+      }
     });
   }, [data, fetchHome]);
 
   useEffect(() => {
     noteData?.pages.flat().map((d) => {
       const newNote = convertNotification(d);
-      updateNotificationList(newNote, "LI");
+      if (!muteAccounts?.find((account) => account.id === newNote.account.id)) {
+        updateNotificationList(newNote, "LI");
+      }
     });
   }, [noteData, fetchNotification]);
 
@@ -417,14 +426,24 @@ export const useTimeline = () => {
       switch (receivedMessage["event"]) {
         case "update": {
           const newPost = convertPost(JSON.parse(receivedMessage["payload"]));
-          updatePostList(newPost);
+          if (
+            !muteAccounts?.find((account) => account.id === newPost.account.id)
+          ) {
+            updatePostList(newPost);
+          }
           break;
         }
         case "notification": {
           const newNotification = convertNotification(
             JSON.parse(receivedMessage["payload"])
           );
-          updateNotificationList(newNotification);
+          if (
+            !muteAccounts?.find(
+              (account) => account.id === newNotification.account.id
+            )
+          ) {
+            updateNotificationList(newNotification);
+          }
           break;
         }
       }
