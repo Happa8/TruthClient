@@ -1,10 +1,10 @@
 import { css, cx } from "@/styled-system/css";
 import { FC } from "react";
-import TextArea from "./Common/TextArea";
+import TextArea from "@/src/components/Common/TextArea";
 import { atom, useAtom, useAtomValue } from "jotai";
-import { usePostTruth } from "../hooks/post";
-import { QuotePostAtom, useNullableAtomValue } from "../atoms";
-import InnerPost from "./Post/InnerPost";
+import { usePostTruth } from "@/src/hooks/post";
+import { QuotePostAtom, useNullableAtomValue } from "@/src/atoms";
+import InnerPost from "@/src/components/Post/InnerPost";
 import { MdCancel } from "react-icons/md";
 
 type Props = {

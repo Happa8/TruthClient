@@ -22,14 +22,19 @@ const Post: FC<Props> = ({ dataAtom }) => {
 
   const { refetch } = usePost({ id: data.id });
 
+  // RTかどうかを判定
   const isRepost = data.reblog !== null;
+  // RTならRT元のデータを、そうでなければそのままのデータを取得
   const postdata = data.reblog !== null ? data.reblog : data;
 
+  // 投稿の内容を取得（RTとかのデータを除去）
   const content = getContentFromPost(postdata.content);
 
+  // いいね機能のフック
   const { mutateAsync: favouritePost } = useFavouritePost();
   const { mutateAsync: unfavouritePost } = useUnfavouritePost();
 
+  // カラムの状態を管理するアトム
   const [_, dispatchColumn] = useAtom(ColumnsAtom);
 
   // テキストが選択されている／されていた直後はクリックイベントを発火させない
@@ -79,7 +84,7 @@ const Post: FC<Props> = ({ dataAtom }) => {
         }
       }}
     >
-      {isRepost ? (
+      {isRepost && (
         <p
           className={css({
             color: "gray.700",
@@ -106,8 +111,6 @@ const Post: FC<Props> = ({ dataAtom }) => {
           </span>
           &nbsp; ReTruthed
         </p>
-      ) : (
-        <></>
       )}
       <div className={css({ display: "flex", gap: 2, alignItems: "center" })}>
         <Avatar

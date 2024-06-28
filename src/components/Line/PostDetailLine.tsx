@@ -1,7 +1,7 @@
 import { css } from "@/styled-system/css";
 import { FC, memo } from "react";
 import { TPost, usePost } from "../../hooks/connection";
-import LineWrapper from "../LineWrapper";
+import LineWrapper from "@/src/components/Line/LineWrapper";
 import LineHeader from "./LineHeader";
 import { ColumnsAtom } from "../../atoms";
 import { useAtom } from "jotai";

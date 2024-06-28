@@ -1,9 +1,9 @@
 import { FC, memo, useRef } from "react";
-import { css } from "../../styled-system/css";
+import { css } from "@/styled-system/css";
 import LineHeader from "./LineHeader";
 import LineWrapper from "./LineWrapper";
-import Post from "./Post";
-import { useTimeline } from "../hooks/connection";
+import Post from "@/src/components/Post/Post";
+import { useTimeline } from "@/src/hooks/connection";
 import { VList, VListHandle } from "virtua";
 
 // type Props = {};

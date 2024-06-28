@@ -1,10 +1,10 @@
 import { css } from "@/styled-system/css";
 import { ComponentProps, FC } from "react";
-import LineWrapper from "./LineWrapper";
-import LineHeader from "./LineHeader";
-import TruthSubmitForm from "./TruthSubmitForm";
-import Button from "./Common/Button";
-import { useLogout } from "../hooks/auth";
+import LineWrapper from "@/src/components/Line/LineWrapper";
+import LineHeader from "@/src/components/Line/LineHeader";
+import TruthSubmitForm from "@/src/components/Form/TruthSubmitForm";
+import Button from "@/src/components//Common/Button";
+import { useLogout } from "@/src/hooks/auth";
 
 type Props = ComponentProps<"div">;
 

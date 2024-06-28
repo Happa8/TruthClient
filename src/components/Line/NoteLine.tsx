@@ -1,10 +1,10 @@
 import { FC, useRef } from "react";
-import { css } from "../../styled-system/css";
+import { css } from "@/styled-system/css";
 import LineHeader from "./LineHeader";
 import LineWrapper from "./LineWrapper";
 import { VList, VListHandle } from "virtua";
-import { useTimeline } from "../hooks/connection";
-import Notification from "./Notification";
+import { useTimeline } from "@/src/hooks/connection";
+import Notification from "@/src/components/Post/Notification";
 
 const NoteLine: FC = () => {
   const { notificationList, loadMoreNotifications, isFetchingNote } =
