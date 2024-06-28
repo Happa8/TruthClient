@@ -14,7 +14,6 @@ const NoteLine: FC = () => {
   return (
     <LineWrapper>
       <LineHeader
-        title="Notification"
         onClick={() => {
           if (ListRef.current) {
             ListRef.current.scrollToIndex(0, {
@@ -22,7 +21,9 @@ const NoteLine: FC = () => {
             });
           }
         }}
-      />
+      >
+        Notification
+      </LineHeader>
       <VList style={{ width: "100%" }} ref={ListRef}>
         {notificationList.map((note) => {
           return <Notification noteDataAtom={note} key={note.toString()} />;

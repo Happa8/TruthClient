@@ -25,9 +25,9 @@ const Image: FC<Props> = ({ data }) => {
           h: "100%",
           objectFit: "cover",
         })}
-        onClick={() => {
-          setIsModalOpen(true);
-        }}
+        // onClick={() => {
+        //   setIsModalOpen(true);
+        // }}
         {...api.triggerProps}
       />
       {api.isOpen && (
@@ -50,7 +50,7 @@ const Image: FC<Props> = ({ data }) => {
           </div>
         </Portal>
       )}
-      {isModalOpen && (
+      {/* {isModalOpen && (
         <Portal>
           <div
             className={css({
@@ -65,7 +65,7 @@ const Image: FC<Props> = ({ data }) => {
             })}
           ></div>
         </Portal>
-      )}
+      )} */}
     </>
   );
 };

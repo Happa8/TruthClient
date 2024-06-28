@@ -34,11 +34,12 @@ const PostDetailLine: FC<Props> = ({ postId, columnIndex }) => {
   return (
     <LineWrapper>
       <LineHeader
-        title="Post Detail"
         onClickClose={() => {
           dispatch({ type: "delete", index: columnIndex });
         }}
-      />
+      >
+        Post Detail
+      </LineHeader>
       {status === "success" ? (
         <PostDetailLineCore data={data} />
       ) : (

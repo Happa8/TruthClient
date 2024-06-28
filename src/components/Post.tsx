@@ -117,7 +117,6 @@ const Post: FC<Props> = ({ dataAtom }) => {
           }
           subImg={postdata.group && postdata.account.avatar}
         />
-
         <div
           className={css({
             display: "flex",
@@ -191,7 +190,7 @@ const Post: FC<Props> = ({ dataAtom }) => {
                 })}
                 key={m.id}
               >
-                @{m.username}
+                @{m.username}&nbsp;
               </span>
             ))}
           </p>

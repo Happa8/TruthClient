@@ -16,7 +16,6 @@ const HomeLine: FC = () => {
   return (
     <LineWrapper>
       <LineHeader
-        title="Home"
         onClick={() => {
           if (ListRef.current) {
             ListRef.current.scrollToIndex(0, {
@@ -24,7 +23,9 @@ const HomeLine: FC = () => {
             });
           }
         }}
-      />
+      >
+        Home
+      </LineHeader>
       <VList style={{ width: "100%" }} ref={ListRef}>
         {postList.map((post, i) => {
           return <Post key={i} dataAtom={post} />;

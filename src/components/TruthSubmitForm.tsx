@@ -62,6 +62,7 @@ const TruthSubmitForm: FC<Props> = ({ className }) => {
         value={truthText}
         onChange={(e) => setTruthText(e.target.value)}
         onKeyDown={handleKeyDown}
+        placeholder="What's the Truth?"
       />
 
       {quotePostAtom && (

@@ -4,7 +4,8 @@ import { useMemo } from "react";
 import Column from "./components/Column";
 import { atomWithReducer } from "jotai/utils";
 
-export const tokenAtom = atom(import.meta.env.VITE_ACCESS_TOKEN);
+// export const tokenAtom = atom(import.meta.env.VITE_ACCESS_TOKEN);
+export const tokenAtom = atom<string>("");
 
 export const notificationsAtom = atom<TNotification[]>([]);
 
