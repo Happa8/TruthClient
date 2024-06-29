@@ -85,12 +85,6 @@ export type TMedia = {
           size: string;
           aspect: number;
         };
-        small: {
-          width: number;
-          height: number;
-          size: string;
-          aspect: number;
-        };
       };
     }
   | {
@@ -109,12 +103,6 @@ export type TMedia = {
           frameRate: string;
           duration: number;
           bitrate: number;
-        };
-        small: {
-          width: number;
-          height: number;
-          size: string;
-          aspect: number;
         };
       };
     }
@@ -137,12 +125,6 @@ export type TMedia = {
           frameRate: string;
           duration: number;
           bitrate: number;
-        };
-        small: {
-          width: number;
-          height: number;
-          size: string;
-          aspect: number;
         };
       };
     }
@@ -219,12 +201,6 @@ export const convertMedia = (data: any): TMedia => {
             size: data.meta.original.size,
             aspect: data.meta.original.aspect,
           },
-          small: {
-            width: data.meta.small.width,
-            height: data.meta.small.height,
-            size: data.meta.small.size,
-            aspect: data.meta.small.aspect,
-          },
         },
       };
       return media;
@@ -250,12 +226,6 @@ export const convertMedia = (data: any): TMedia => {
             frameRate: data.meta.original.frame_rate,
             duration: data.meta.original.duration,
             bitrate: data.meta.original.bitrate,
-          },
-          small: {
-            width: data.meta.small.width,
-            height: data.meta.small.height,
-            size: data.meta.small.size,
-            aspect: data.meta.small.aspect,
           },
         },
       };
@@ -285,12 +255,6 @@ export const convertMedia = (data: any): TMedia => {
             frameRate: data.meta.original.frame_rate,
             duration: data.meta.original.duration,
             bitrate: data.meta.original.bitrate,
-          },
-          small: {
-            width: data.meta.small.width,
-            height: data.meta.small.height,
-            size: data.meta.small.size,
-            aspect: data.meta.small.aspect,
           },
         },
       };
