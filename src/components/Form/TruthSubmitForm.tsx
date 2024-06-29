@@ -1,5 +1,5 @@
 import { css, cx } from "@/styled-system/css";
-import { FC, useCallback, useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import TextArea from "@/src/components/Common/TextArea";
 import { atom, useAtom, useAtomValue } from "jotai";
 import { usePostTruth } from "@/src/hooks/post";
