@@ -52,7 +52,7 @@ const DetailPostCore: FC<Props> = ({ data }) => {
             >
               {postdata.group
                 ? postdata.group.displayName
-                : postdata.account.displayName}
+                : postdata.account.name}
             </span>
           </p>
           <p>

@@ -69,11 +69,98 @@ export type TNotification = {
 
 export type TMedia = {
   id: string;
-  type: "image";
   url: string;
   previewUrl: string;
   description: string;
-};
+} & (
+  | {
+      type: "unknown";
+    }
+  | {
+      type: "image";
+      meta: {
+        original: {
+          width: number;
+          height: number;
+          size: string;
+          aspect: number;
+        };
+        small: {
+          width: number;
+          height: number;
+          size: string;
+          aspect: number;
+        };
+      };
+    }
+  | {
+      type: "gifv";
+      meta: {
+        length: string;
+        duration: number;
+        fps: number;
+        size: string;
+        width: number;
+        height: number;
+        aspect: number;
+        original: {
+          width: number;
+          height: number;
+          frameRate: string;
+          duration: number;
+          bitrate: number;
+        };
+        small: {
+          width: number;
+          height: number;
+          size: string;
+          aspect: number;
+        };
+      };
+    }
+  | {
+      type: "video";
+      meta: {
+        length: string;
+        duration: number;
+        fps: number;
+        size: string;
+        width: number;
+        height: number;
+        aspect: number;
+        audioEncode: string;
+        audioBitrate: string;
+        audioChannels: string;
+        original: {
+          width: number;
+          height: number;
+          frameRate: string;
+          duration: number;
+          bitrate: number;
+        };
+        small: {
+          width: number;
+          height: number;
+          size: string;
+          aspect: number;
+        };
+      };
+    }
+  | {
+      type: "audio";
+      meta: {
+        length: string;
+        duration: number;
+        audioEncode: string;
+        audioBitrate: string;
+        audioChannels: string;
+        original: {
+          duration: number;
+          bitrate: number;
+        };
+      };
+    }
+);
 
 export type TGroup = {
   id: string;
@@ -116,15 +203,141 @@ const convertCard = (data: any): TCard => {
   return card;
 };
 
-const convertMedia = (data: any): TMedia => {
-  const media: TMedia = {
-    id: data.id,
-    description: data.description,
-    previewUrl: data.preview_url,
-    type: data.type,
-    url: data.url,
-  };
-  return media;
+export const convertMedia = (data: any): TMedia => {
+  switch (data.type) {
+    case "image": {
+      const media: TMedia = {
+        id: data.id,
+        description: data.description,
+        previewUrl: data.preview_url,
+        type: data.type,
+        url: data.url,
+        meta: {
+          original: {
+            width: data.meta.original.width,
+            height: data.meta.original.height,
+            size: data.meta.original.size,
+            aspect: data.meta.original.aspect,
+          },
+          small: {
+            width: data.meta.small.width,
+            height: data.meta.small.height,
+            size: data.meta.small.size,
+            aspect: data.meta.small.aspect,
+          },
+        },
+      };
+      return media;
+    }
+    case "gifv": {
+      const media2: TMedia = {
+        id: data.id,
+        description: data.description,
+        previewUrl: data.preview_url,
+        type: data.type,
+        url: data.url,
+        meta: {
+          length: data.meta.length,
+          duration: data.meta.duration,
+          fps: data.meta.fps,
+          size: data.meta.size,
+          width: data.meta.width,
+          height: data.meta.height,
+          aspect: data.meta.aspect,
+          original: {
+            width: data.meta.original.width,
+            height: data.meta.original.height,
+            frameRate: data.meta.original.frame_rate,
+            duration: data.meta.original.duration,
+            bitrate: data.meta.original.bitrate,
+          },
+          small: {
+            width: data.meta.small.width,
+            height: data.meta.small.height,
+            size: data.meta.small.size,
+            aspect: data.meta.small.aspect,
+          },
+        },
+      };
+      return media2;
+    }
+    case "video": {
+      const media3: TMedia = {
+        id: data.id,
+        description: data.description,
+        previewUrl: data.preview_url,
+        type: data.type,
+        url: data.url,
+        meta: {
+          length: data.meta.length,
+          duration: data.meta.duration,
+          fps: data.meta.fps,
+          size: data.meta.size,
+          width: data.meta.width,
+          height: data.meta.height,
+          aspect: data.meta.aspect,
+          audioEncode: data.meta.audio_encode,
+          audioBitrate: data.meta.audio_bitrate,
+          audioChannels: data.meta.audio_channels,
+          original: {
+            width: data.meta.original.width,
+            height: data.meta.original.height,
+            frameRate: data.meta.original.frame_rate,
+            duration: data.meta.original.duration,
+            bitrate: data.meta.original.bitrate,
+          },
+          small: {
+            width: data.meta.small.width,
+            height: data.meta.small.height,
+            size: data.meta.small.size,
+            aspect: data.meta.small.aspect,
+          },
+        },
+      };
+      return media3;
+    }
+    case "audio": {
+      const media4: TMedia = {
+        id: data.id,
+        description: data.description,
+        previewUrl: data.preview_url,
+        type: data.type,
+        url: data.url,
+        meta: {
+          length: data.meta.length,
+          duration: data.meta.duration,
+          audioEncode: data.meta.audio_encode,
+          audioBitrate: data.meta.audio_bitrate,
+          audioChannels: data.meta.audio_channels,
+          original: {
+            duration: data.meta.original.duration,
+            bitrate: data.meta.original.bitrate,
+          },
+        },
+      };
+      return media4;
+    }
+    case "unknown": {
+      const media5: TMedia = {
+        id: data.id,
+        description: data.description,
+        previewUrl: data.preview_url,
+        type: data.type,
+        url: data.url,
+      };
+      return media5;
+    }
+    default: {
+      const media6: TMedia = {
+        id: data.id,
+        description: data.description,
+        previewUrl: data.preview_url,
+        type: "unknown",
+        url: data.url,
+      };
+      return media6;
+    }
+  }
 };
 
 export const convertAccount = (data: any): TAccount => {

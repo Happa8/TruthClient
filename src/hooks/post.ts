@@ -8,6 +8,7 @@ export type TPostSend = {
   quoteId?: string;
   replyId?: string;
   replyAccountUserNames?: string[];
+  mediaIds?: string[];
 };
 
 export const postTruth = async (
@@ -25,6 +26,7 @@ export const postTruth = async (
       quote_id: data.quoteId,
       in_reply_to_id: data.replyId,
       to: data.replyAccountUserNames,
+      media_ids: data.mediaIds,
     }),
   })
     .then((res) => res.json())

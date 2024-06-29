@@ -19,7 +19,7 @@ type Props =
 const describeNote = (type: TNotification["type"]): string => {
   switch (type) {
     case "favourite":
-      return "favorited";
+      return "liked";
     case "mention":
       return "mentioned you";
     case "reblog":
