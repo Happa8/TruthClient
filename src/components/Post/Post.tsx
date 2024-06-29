@@ -1,6 +1,6 @@
 import { FC, useEffect, useRef, useState } from "react";
 import { css, cva } from "../../../styled-system/css";
-import { TPostAtom, usePost } from "../../hooks/connection";
+import { TPostAtom } from "../../hooks/connection";
 import Media from "./Media";
 import { MdRepeat } from "react-icons/md";
 import { calcTimeDelta, getContentFromPost } from "../../utils";
@@ -34,8 +34,6 @@ const contentStyle = cva({
 
 const Post: FC<Props> = ({ dataAtom }) => {
   const [data, setData] = useAtom(dataAtom);
-
-  const { refetch } = usePost({ id: data.id });
 
   // RTかどうかを判定
   const isRepost = data.reblog !== null;
@@ -315,17 +313,9 @@ const Post: FC<Props> = ({ dataAtom }) => {
                   : postdata.favouritesCount + 1,
               });
               if (!postdata.favourited) {
-                favouritePost({ id: postdata.id }).then(() => {
-                  refetch().then((data) => {
-                    if (data.data !== undefined) setData(data.data);
-                  });
-                });
+                favouritePost({ id: postdata.id });
               } else {
-                unfavouritePost({ id: postdata.id }).then(() => {
-                  refetch().then((data) => {
-                    if (data.data !== undefined) setData(data.data);
-                  });
-                });
+                unfavouritePost({ id: postdata.id });
               }
             }}
           />
