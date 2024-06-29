@@ -203,7 +203,7 @@ const convertCard = (data: any): TCard => {
   return card;
 };
 
-const convertMedia = (data: any): TMedia => {
+export const convertMedia = (data: any): TMedia => {
   switch (data.type) {
     case "image": {
       const media: TMedia = {
