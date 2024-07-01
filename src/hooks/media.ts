@@ -14,7 +14,6 @@ const uploadMedia = async (
 ): Promise<TMedia> => {
   const formData = new FormData();
   formData.append("file", data.file);
-  formData.append("description", "Uploaded from Truthdeck");
 
   const res = await fetch(`https://truthsocial.com/api/v1/media`, {
     method: "POST",

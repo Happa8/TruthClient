@@ -47,15 +47,31 @@ const RepostIconButton: FC<Props> = ({ dataAtom }) => {
       <MenuItem
         value="retruth"
         onClick={() => {
-          setData({
-            ...data,
-            reblogged: !postdata.reblogged,
-            reblogsCount: postdata.reblogged
-              ? postdata.reblogsCount > 0
-                ? postdata.reblogsCount - 1
-                : postdata.reblogsCount
-              : postdata.reblogsCount + 1,
-          });
+          if (data.reblog === null) {
+            setData({
+              ...data,
+              reblogged: !postdata.reblogged,
+              reblogsCount: postdata.reblogged
+                ? postdata.reblogsCount > 0
+                  ? postdata.reblogsCount - 1
+                  : postdata.reblogsCount
+                : postdata.reblogsCount + 1,
+            });
+          } else {
+            setData({
+              ...data,
+              reblog: {
+                ...data.reblog,
+                reblogged: !postdata.reblogged,
+                reblogsCount: postdata.reblogged
+                  ? postdata.reblogsCount > 0
+                    ? postdata.reblogsCount - 1
+                    : postdata.reblogsCount
+                  : postdata.reblogsCount + 1,
+              },
+            });
+          }
+
           if (postdata.reblogged) {
             repost({ id: postdata.id, action: "unrepost" });
           } else {
