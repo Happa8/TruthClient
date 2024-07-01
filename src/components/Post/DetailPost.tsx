@@ -2,10 +2,10 @@ import { css } from "@/styled-system/css";
 import { FC, Suspense } from "react";
 import { TPost } from "@/src/hooks/connection";
 import { getContentFromPost } from "@/src//utils";
-import Avatar from "./Avatar";
 import Media from "./Media";
 import InnerPost from "./InnerPost";
 import InnerCard from "./InnerCard";
+import PostHeader from "./PostHeader";
 
 type Props = {
   data: TPost;
@@ -27,49 +27,7 @@ const DetailPostCore: FC<Props> = ({ data }) => {
         borderColor: "gray.200",
       })}
     >
-      <div className={css({ display: "flex", gap: 2, alignItems: "center" })}>
-        <Avatar
-          mainImg={
-            postdata.group ? postdata.group.avatar : postdata.account.avatar
-          }
-          subImg={postdata.group && postdata.account.avatar}
-        />
-
-        <div
-          className={css({
-            display: "flex",
-            flexDir: "column",
-            lineHeight: "none",
-            gap: 1,
-          })}
-        >
-          <p>
-            <span
-              className={css({
-                fontWeight: "bold",
-                color: "gray.900",
-              })}
-            >
-              {postdata.group
-                ? postdata.group.displayName
-                : postdata.account.name}
-            </span>
-          </p>
-          <p>
-            <span
-              className={css({
-                fontSize: "small",
-                color: "gray.700",
-              })}
-            >
-              {postdata.group && "posted by "}
-              <a href={postdata.account.url} target="_blank">
-                @{postdata.account.userName}
-              </a>
-            </span>
-          </p>
-        </div>
-      </div>
+      <PostHeader postdata={postdata} />
       <div
         className={css({
           fontSize: "md",
