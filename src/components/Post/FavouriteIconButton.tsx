@@ -1,10 +1,12 @@
+import { TPostAtom } from "@/src/hooks/connection";
+import { useFavouritePost } from "@/src/hooks/post";
 import { cva } from "@/styled-system/css";
+import { useAtom } from "jotai";
 import { ComponentProps, FC } from "react";
 import { MdFavorite, MdFavoriteBorder } from "react-icons/md";
 
 type Props = {
-  isFavourite: boolean;
-  count: number;
+  dataAtom: TPostAtom;
 } & ComponentProps<"button">;
 
 const style = cva({
@@ -24,10 +26,55 @@ const style = cva({
   },
 });
 
-const FavouriteIconButton: FC<Props> = ({ isFavourite, count, ...props }) => {
+const FavouriteIconButton: FC<Props> = ({ dataAtom, ...props }) => {
+  const [data, setData] = useAtom(dataAtom);
+  const postdata = data.reblog !== null ? data.reblog : data;
+  const isRepost = data.reblog !== null;
+  const isFavourite = postdata.favourited;
+
+  const { mutateAsync: favouritePost } = useFavouritePost();
+
   return (
-    <button className={style({ isFavourite })} {...props}>
-      {isFavourite ? <MdFavorite /> : <MdFavoriteBorder />} {count}
+    <button
+      className={style({ isFavourite })}
+      onClick={() => {
+        if (!isRepost) {
+          setData({
+            ...data,
+            favourited: !postdata.favourited,
+            favouritesCount: postdata.favourited
+              ? postdata.favouritesCount > 0
+                ? postdata.favouritesCount - 1
+                : postdata.favouritesCount
+              : postdata.favouritesCount + 1,
+          });
+        } else {
+          if (data.reblog?.id !== undefined) {
+            setData({
+              ...data,
+              reblog: {
+                ...data.reblog,
+                favourited: !postdata.favourited,
+                favouritesCount: postdata.favourited
+                  ? postdata.favouritesCount > 0
+                    ? postdata.favouritesCount - 1
+                    : postdata.favouritesCount
+                  : postdata.favouritesCount + 1,
+              },
+            });
+          }
+        }
+
+        if (!postdata.favourited) {
+          favouritePost({ id: postdata.id, action: "favourite" });
+        } else {
+          favouritePost({ id: postdata.id, action: "unfavourite" });
+        }
+      }}
+      {...props}
+    >
+      {isFavourite ? <MdFavorite /> : <MdFavoriteBorder />}{" "}
+      {postdata.favouritesCount}
     </button>
   );
 };

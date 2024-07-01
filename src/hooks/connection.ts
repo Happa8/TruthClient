@@ -435,10 +435,11 @@ const getPost = async (accessToken: string, id: string) => {
 export const usePost = ({ id }: { id: string }) => {
   const [accessToken] = useAtom(tokenAtom);
 
-  const fetcher = useCallback(
-    () => getPost(accessToken, id),
-    [accessToken, id]
-  );
+  const fetcher = useCallback(async () => {
+    const post = await getPost(accessToken, id);
+    const postAtom: TPostAtom = atom(post);
+    return postAtom;
+  }, [accessToken, id]);
 
   return useQuery({
     queryKey: [id],

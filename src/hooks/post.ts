@@ -45,6 +45,7 @@ export const usePostTruth = () => {
 
 export type TFavouritePost = {
   id: string;
+  action: "favourite" | "unfavourite";
 };
 
 const favoritePost = async (accessToken: string, data: TFavouritePost) => {
@@ -60,14 +61,6 @@ const favoritePost = async (accessToken: string, data: TFavouritePost) => {
   return res;
 };
 
-export const useFavouritePost = () => {
-  const [accessToken] = useAtom(tokenAtom);
-
-  return useMutation({
-    mutationFn: (data: TFavouritePost) => favoritePost(accessToken, data),
-  });
-};
-
 const unfavoritePost = async (accessToken: string, data: TFavouritePost) => {
   const res = await fetch(
     `https://truthsocial.com/api/v1/statuses/${data.id}/unfavourite`,
@@ -81,11 +74,17 @@ const unfavoritePost = async (accessToken: string, data: TFavouritePost) => {
   return res;
 };
 
-export const useUnfavouritePost = () => {
+export const useFavouritePost = () => {
   const [accessToken] = useAtom(tokenAtom);
 
   return useMutation({
-    mutationFn: (data: TFavouritePost) => unfavoritePost(accessToken, data),
+    mutationFn: (data: TFavouritePost) => {
+      if (data.action === "favourite") {
+        return favoritePost(accessToken, data);
+      } else {
+        return unfavoritePost(accessToken, data);
+      }
+    },
   });
 };
 

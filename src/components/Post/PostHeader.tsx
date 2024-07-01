@@ -58,6 +58,11 @@ const PostHeader: FC<Props> = ({ postdata }) => {
               onClick={(e) => {
                 e.stopPropagation();
               }}
+              className={css({
+                _hover: {
+                  textDecoration: "underline",
+                },
+              })}
             >
               @{postdata.account.userName}
             </a>
@@ -68,14 +73,20 @@ const PostHeader: FC<Props> = ({ postdata }) => {
               color: "gray.700",
             })}
           >
+            ・
             <a
               href={postdata.url}
               target="_blank"
               onClick={(e) => {
                 e.stopPropagation();
               }}
+              className={css({
+                _hover: {
+                  textDecoration: "underline",
+                },
+              })}
             >
-              ・{calcTimeDelta(postdata.createdAt)}
+              {calcTimeDelta(postdata.createdAt)}
             </a>
           </span>
         </p>

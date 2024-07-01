@@ -1,9 +1,9 @@
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import { TPost, TPostAtom, usePost } from "../../hooks/connection";
 import { css } from "../../../styled-system/css";
 import InnerCard from "./InnerCard";
 import { calcTimeDelta, getContentFromPost } from "../../utils";
-import { useAtom, useAtomValue } from "jotai";
+import { atom, useAtom, useAtomValue } from "jotai";
 import { ColumnsAtom } from "../../atoms";
 
 type Props = (
@@ -12,10 +12,13 @@ type Props = (
   | { postdataAtom: TPostAtom }
 ) & { showCard?: boolean };
 
-const InnerPostCore: FC<{ postdata: TPost; showCard?: boolean }> = ({
-  postdata,
+const InnerPostCore: FC<{ dataAtom: TPostAtom; showCard?: boolean }> = ({
+  dataAtom,
   showCard = true,
 }) => {
+  const data = useAtomValue(dataAtom);
+  const postdata = data.reblog !== null ? data.reblog : data;
+
   const [_, dispatchColumn] = useAtom(ColumnsAtom);
 
   return (
@@ -73,7 +76,7 @@ const InnerPostWithId: FC<{ id: string }> = ({ id }) => {
   return (
     <>
       {isSuccess ? (
-        <InnerPostCore postdata={data} />
+        <InnerPostCore dataAtom={data} />
       ) : (
         <div>now fetching...</div>
       )}
@@ -81,24 +84,19 @@ const InnerPostWithId: FC<{ id: string }> = ({ id }) => {
   );
 };
 
-const InnerPostWithAtom: FC<{ postdataAtom: TPostAtom }> = ({
-  postdataAtom,
-}) => {
-  const data = useAtomValue(postdataAtom);
-  const postdata = data.reblog !== null ? data.reblog : data;
+const InnerPostWithData: FC<{ postdata: TPost }> = ({ postdata }) => {
+  const dataAtom: TPostAtom = useMemo(() => atom(postdata), [postdata]);
 
-  return <InnerPostCore postdata={postdata} />;
+  return <InnerPostCore dataAtom={dataAtom} />;
 };
 
 const InnerPost: FC<Props> = (props) => {
   if ("id" in props) {
     return <InnerPostWithId id={props.id} />;
   } else if ("postdata" in props) {
-    return (
-      <InnerPostCore postdata={props.postdata} showCard={props.showCard} />
-    );
+    return <InnerPostWithData postdata={props.postdata} />;
   } else {
-    return <InnerPostWithAtom postdataAtom={props.postdataAtom} />;
+    return <InnerPost postdataAtom={props.postdataAtom} />;
   }
 };
 
