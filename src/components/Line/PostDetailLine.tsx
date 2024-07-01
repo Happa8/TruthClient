@@ -1,4 +1,4 @@
-import { FC, memo } from "react";
+import { FC, memo, useEffect } from "react";
 import { usePost } from "../../hooks/connection";
 import LineWrapper from "@/src/components/Line/LineWrapper";
 import LineHeader from "./LineHeader";
@@ -6,6 +6,7 @@ import { ColumnsAtom } from "../../atoms";
 import { useAtom } from "jotai";
 import DetailPost from "../Post/DetailPost";
 import LineContent from "./LineContent";
+import { useReplies } from "@/src/hooks/reply";
 
 type Props = {
   postId: string;
@@ -14,7 +15,14 @@ type Props = {
 
 const PostDetailLine: FC<Props> = ({ postId, columnIndex }) => {
   const { status, data } = usePost({ id: postId });
+  const { data: replyData, status: replyStatus } = useReplies({ id: postId });
   const [_, dispatch] = useAtom(ColumnsAtom);
+
+  useEffect(() => {
+    if (replyStatus === "success") {
+      console.log(replyData);
+    }
+  }, [replyStatus, replyData]);
 
   return (
     <LineWrapper>

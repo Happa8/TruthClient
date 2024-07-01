@@ -205,7 +205,6 @@ const Post: FC<Props> = ({ dataAtom }) => {
               display: "inline-flex",
               gap: 6,
               fontSize: "sm",
-              color: "gray.700",
             })}
             onClick={(e) => {
               e.stopPropagation();

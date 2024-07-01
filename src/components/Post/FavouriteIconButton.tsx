@@ -7,6 +7,7 @@ import { MdFavorite, MdFavoriteBorder } from "react-icons/md";
 
 type Props = {
   dataAtom: TPostAtom;
+  displayCount?: boolean;
 } & ComponentProps<"button">;
 
 const style = cva({
@@ -15,6 +16,7 @@ const style = cva({
     alignItems: "center",
     gap: 1,
     cursor: "pointer",
+    color: "gray.700",
   },
   variants: {
     isFavourite: {
@@ -26,7 +28,11 @@ const style = cva({
   },
 });
 
-const FavouriteIconButton: FC<Props> = ({ dataAtom, ...props }) => {
+const FavouriteIconButton: FC<Props> = ({
+  dataAtom,
+  displayCount = true,
+  ...props
+}) => {
   const [data, setData] = useAtom(dataAtom);
   const postdata = data.reblog !== null ? data.reblog : data;
   const isRepost = data.reblog !== null;
@@ -74,7 +80,7 @@ const FavouriteIconButton: FC<Props> = ({ dataAtom, ...props }) => {
       {...props}
     >
       {isFavourite ? <MdFavorite /> : <MdFavoriteBorder />}{" "}
-      {postdata.favouritesCount}
+      {displayCount && postdata.favouritesCount}
     </button>
   );
 };

@@ -9,6 +9,7 @@ import { QuotePostAtom } from "@/src/atoms";
 
 type Props = {
   dataAtom: TPostAtom;
+  displayCount?: boolean;
 };
 
 const style = cva({
@@ -17,6 +18,7 @@ const style = cva({
     alignItems: "center",
     gap: 1,
     cursor: "pointer",
+    color: "gray.700",
   },
   variants: {
     isRepost: {
@@ -28,7 +30,7 @@ const style = cva({
   },
 });
 
-const RepostIconButton: FC<Props> = ({ dataAtom }) => {
+const RepostIconButton: FC<Props> = ({ dataAtom, displayCount = true }) => {
   const [data, setData] = useAtom(dataAtom);
   const postdata = data.reblog !== null ? data.reblog : data;
 
@@ -38,10 +40,11 @@ const RepostIconButton: FC<Props> = ({ dataAtom }) => {
 
   return (
     <Menu
+      className={style({ isRepost: postdata.reblogged })}
       trigger={
-        <span className={style({ isRepost: postdata.reblogged })}>
-          <MdRepeat /> {postdata.reblogsCount}
-        </span>
+        <>
+          <MdRepeat /> {displayCount && postdata.reblogsCount}
+        </>
       }
     >
       <MenuItem

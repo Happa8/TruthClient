@@ -432,9 +432,11 @@ const getPost = async (accessToken: string, id: string) => {
   return convertPost(resjson);
 };
 
+// Postの情報を取得するためのフック
 export const usePost = ({ id }: { id: string }) => {
   const [accessToken] = useAtom(tokenAtom);
 
+  // TPostAtom型のアトムを作成
   const fetcher = useCallback(async () => {
     const post = await getPost(accessToken, id);
     const postAtom: TPostAtom = atom(post);

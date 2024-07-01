@@ -8,6 +8,8 @@ import InnerCard from "./InnerCard";
 import PostHeader from "./PostHeader";
 import FavouriteIconButton from "./FavouriteIconButton";
 import { useAtomValue } from "jotai";
+import RepostIconButton from "./RepostIconButton";
+import ReplyIconButton from "./ReplyIconButton";
 
 type Props = {
   dataAtom: TPostAtom;
@@ -114,8 +116,20 @@ const DetailPostCore: FC<Props> = ({ dataAtom }) => {
         </span>
       </p>
 
-      <div>
-        <FavouriteIconButton dataAtom={dataAtom} />
+      <div
+        className={css({
+          display: "flex",
+          justifyContent: "space-between",
+          fontSize: "xl",
+          alignItems: "center",
+          marginTop: 2,
+          px: 4,
+          color: "gray.500",
+        })}
+      >
+        <ReplyIconButton dataAtom={dataAtom} displayCount={false} />
+        <RepostIconButton dataAtom={dataAtom} displayCount={false} />
+        <FavouriteIconButton dataAtom={dataAtom} displayCount={false} />
       </div>
     </div>
   );
