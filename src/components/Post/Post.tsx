@@ -1,6 +1,6 @@
 import { FC, useEffect, useRef, useState } from "react";
 import { css, cva } from "../../../styled-system/css";
-import { TPostAtom } from "../../hooks/connection";
+import { TPost, TPostAtom } from "../../hooks/connection";
 import Media from "./Media";
 import { MdRepeat } from "react-icons/md";
 import { calcTimeDelta, getContentFromPost } from "../../utils";
@@ -303,15 +303,33 @@ const Post: FC<Props> = ({ dataAtom }) => {
             count={postdata.favouritesCount}
             isFavourite={postdata.favourited}
             onClick={() => {
-              setData({
-                ...data,
-                favourited: !postdata.favourited,
-                favouritesCount: postdata.favourited
-                  ? postdata.favouritesCount > 0
-                    ? postdata.favouritesCount - 1
-                    : postdata.favouritesCount
-                  : postdata.favouritesCount + 1,
-              });
+              if (!isRepost) {
+                setData({
+                  ...data,
+                  favourited: !postdata.favourited,
+                  favouritesCount: postdata.favourited
+                    ? postdata.favouritesCount > 0
+                      ? postdata.favouritesCount - 1
+                      : postdata.favouritesCount
+                    : postdata.favouritesCount + 1,
+                });
+              } else {
+                if (data.reblog?.id !== undefined) {
+                  setData({
+                    ...data,
+                    reblog: {
+                      ...data.reblog,
+                      favourited: !postdata.favourited,
+                      favouritesCount: postdata.favourited
+                        ? postdata.favouritesCount > 0
+                          ? postdata.favouritesCount - 1
+                          : postdata.favouritesCount
+                        : postdata.favouritesCount + 1,
+                    },
+                  });
+                }
+              }
+
               if (!postdata.favourited) {
                 favouritePost({ id: postdata.id });
               } else {
