@@ -18,7 +18,7 @@ const ReplyIconButton: FC<Props> = ({ dataAtom }) => {
   const [_, setReplyPost] = useAtom(ReplyPostAtom);
 
   return (
-    <span
+    <button
       className={css({
         display: "inline-flex",
         alignItems: "center",
@@ -30,7 +30,7 @@ const ReplyIconButton: FC<Props> = ({ dataAtom }) => {
       }}
     >
       <MdOutlineModeComment /> {postdata.repliesCount}
-    </span>
+    </button>
   );
 };
 
