@@ -1,6 +1,6 @@
 import { FC, useEffect, useRef, useState } from "react";
 import { css, cva } from "../../../styled-system/css";
-import { TPost, TPostAtom } from "../../hooks/connection";
+import { TPostAtom } from "../../hooks/connection";
 import Media from "./Media";
 import { MdRepeat } from "react-icons/md";
 import { calcTimeDelta, getContentFromPost } from "../../utils";
