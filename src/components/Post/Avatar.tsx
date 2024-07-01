@@ -14,6 +14,7 @@ const Avatar: FC<Props> = ({ mainImg, subImg }) => {
         h: 8,
         aspectRatio: "1/1",
         position: "relative",
+        flexShrink: 0,
       })}
     >
       <img
