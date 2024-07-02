@@ -15,14 +15,14 @@ type Props = {
 
 const PostDetailLine: FC<Props> = ({ postId, columnIndex }) => {
   const { status, data } = usePost({ id: postId });
-  const { data: replyData, status: replyStatus } = useReplies({ id: postId });
+  // const { data: replyData, status: replyStatus } = useReplies({ id: postId });
   const [_, dispatch] = useAtom(ColumnsAtom);
 
-  useEffect(() => {
-    if (replyStatus === "success") {
-      console.log(replyData);
-    }
-  }, [replyStatus, replyData]);
+  // useEffect(() => {
+  //   if (replyStatus === "success") {
+  //     console.log(replyData);
+  //   }
+  // }, [replyStatus, replyData]);
 
   return (
     <LineWrapper>
