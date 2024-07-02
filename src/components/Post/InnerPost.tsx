@@ -1,21 +1,30 @@
-import { FC } from "react";
+import { FC, memo, useMemo } from "react";
 import { TPost, TPostAtom, usePost } from "../../hooks/connection";
 import { css } from "../../../styled-system/css";
 import InnerCard from "./InnerCard";
 import { calcTimeDelta, getContentFromPost } from "../../utils";
-import { useAtom, useAtomValue } from "jotai";
+import { atom, useAtom, useAtomValue } from "jotai";
 import { ColumnsAtom } from "../../atoms";
+import Media from "./Media";
 
-type Props = (
-  | { id: string }
-  | { postdata: TPost }
-  | { postdataAtom: TPostAtom }
-) & { showCard?: boolean };
+type Props =
+  | (({ id: string } | { postdata: TPost }) & Omit<CoreProps, "dataAtom">)
+  | CoreProps;
 
-const InnerPostCore: FC<{ postdata: TPost; showCard?: boolean }> = ({
-  postdata,
+type CoreProps = {
+  dataAtom: TPostAtom;
+  showCard?: boolean;
+  showMedia?: boolean;
+};
+
+const InnerPostCore: FC<CoreProps> = ({
+  dataAtom,
   showCard = true,
+  showMedia = true,
 }) => {
+  const data = useAtomValue(dataAtom);
+  const postdata = data.reblog !== null ? data.reblog : data;
+
   const [_, dispatchColumn] = useAtom(ColumnsAtom);
 
   return (
@@ -27,7 +36,8 @@ const InnerPostCore: FC<{ postdata: TPost; showCard?: boolean }> = ({
         borderWidth: 1,
         borderRadius: "md",
         fontSize: "small",
-        p: 3,
+        px: 3,
+        py: 2,
         display: "flex",
         flexDir: "column",
         gap: 1,
@@ -58,6 +68,11 @@ const InnerPostCore: FC<{ postdata: TPost; showCard?: boolean }> = ({
           __html: getContentFromPost(postdata.content),
         }}
       />
+      {postdata.mediaAttachments.length !== 0 && showMedia ? (
+        <Media medias={postdata.mediaAttachments} />
+      ) : (
+        <></>
+      )}
       {postdata.card !== undefined && showCard ? (
         <InnerCard carddata={postdata.card} />
       ) : (
@@ -67,13 +82,16 @@ const InnerPostCore: FC<{ postdata: TPost; showCard?: boolean }> = ({
   );
 };
 
-const InnerPostWithId: FC<{ id: string }> = ({ id }) => {
+const InnerPostWithId: FC<{ id: string } & Omit<CoreProps, "dataAtom">> = ({
+  id,
+  ...props
+}) => {
   const { data, isSuccess } = usePost({ id: id });
 
   return (
     <>
       {isSuccess ? (
-        <InnerPostCore postdata={data} />
+        <InnerPostCore {...props} dataAtom={data} />
       ) : (
         <div>now fetching...</div>
       )}
@@ -81,25 +99,24 @@ const InnerPostWithId: FC<{ id: string }> = ({ id }) => {
   );
 };
 
-const InnerPostWithAtom: FC<{ postdataAtom: TPostAtom }> = ({
-  postdataAtom,
-}) => {
-  const data = useAtomValue(postdataAtom);
-  const postdata = data.reblog !== null ? data.reblog : data;
+const InnerPostWithData: FC<
+  { postdata: TPost } & Omit<CoreProps, "dataAtom">
+> = ({ postdata, ...props }) => {
+  const dataAtom: TPostAtom = useMemo(() => atom(postdata), [postdata]);
 
-  return <InnerPostCore postdata={postdata} />;
+  return <InnerPostCore {...props} dataAtom={dataAtom} />;
 };
 
 const InnerPost: FC<Props> = (props) => {
   if ("id" in props) {
-    return <InnerPostWithId id={props.id} />;
+    const { id, ...otherProps } = props;
+    return <InnerPostWithId id={id} {...otherProps} />;
   } else if ("postdata" in props) {
-    return (
-      <InnerPostCore postdata={props.postdata} showCard={props.showCard} />
-    );
+    const { postdata, ...otherProps } = props;
+    return <InnerPostWithData postdata={postdata} {...otherProps} />;
   } else {
-    return <InnerPostWithAtom postdataAtom={props.postdataAtom} />;
+    return <InnerPostCore {...props} />;
   }
 };
 
-export default InnerPost;
+export default memo(InnerPost);

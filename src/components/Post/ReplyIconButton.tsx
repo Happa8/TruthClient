@@ -7,9 +7,10 @@ import { MdOutlineModeComment } from "react-icons/md";
 
 type Props = {
   dataAtom: TPostAtom;
+  displayCount?: boolean;
 };
 
-const ReplyIconButton: FC<Props> = ({ dataAtom }) => {
+const ReplyIconButton: FC<Props> = ({ dataAtom, displayCount = true }) => {
   // 投稿データをatomから取得
   const data = useAtomValue(dataAtom);
   const postdata = data.reblog !== null ? data.reblog : data;
@@ -22,6 +23,8 @@ const ReplyIconButton: FC<Props> = ({ dataAtom }) => {
       className={css({
         display: "inline-flex",
         alignItems: "center",
+        color: "gray.700",
+        cursor: "pointer",
         gap: 1,
       })}
       onClick={(e) => {
@@ -29,7 +32,7 @@ const ReplyIconButton: FC<Props> = ({ dataAtom }) => {
         setReplyPost(dataAtom);
       }}
     >
-      <MdOutlineModeComment /> {postdata.repliesCount}
+      <MdOutlineModeComment /> {displayCount && postdata.repliesCount}
     </button>
   );
 };

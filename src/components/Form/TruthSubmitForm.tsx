@@ -40,6 +40,9 @@ const TruthSubmitForm: FC<Props> = ({ className }) => {
   // 引用投稿
   const [quotePostAtom, setQuotePostAtom] = useAtom(QuotePostAtom);
   const quotePost = useNullableAtomValue(quotePostAtom);
+  useEffect(() => {
+    console.log(quotePostAtom);
+  }, [quotePostAtom]);
 
   // リプライ投稿
   const [replyPostAtom, setReplyPostAtom] = useAtom(ReplyPostAtom);
@@ -224,7 +227,7 @@ const TruthSubmitForm: FC<Props> = ({ className }) => {
               position: "relative",
             })}
           >
-            <InnerPost postdataAtom={replyPostAtom} />
+            <InnerPost dataAtom={replyPostAtom} />
             <button
               type="button"
               className={css({
@@ -301,7 +304,7 @@ const TruthSubmitForm: FC<Props> = ({ className }) => {
             position: "relative",
           })}
         >
-          <InnerPost postdataAtom={quotePostAtom} />
+          <InnerPost dataAtom={quotePostAtom} />
           <button
             type="button"
             className={css({

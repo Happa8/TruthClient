@@ -1,6 +1,5 @@
-import { css } from "@/styled-system/css";
 import { FC, memo } from "react";
-import { TPost, usePost } from "../../hooks/connection";
+import { usePost } from "../../hooks/connection";
 import LineWrapper from "@/src/components/Line/LineWrapper";
 import LineHeader from "./LineHeader";
 import { ColumnsAtom } from "../../atoms";
@@ -13,19 +12,16 @@ type Props = {
   columnIndex: number;
 };
 
-const PostDetailLineCore: FC<{ data: TPost }> = ({ data }) => {
-  const postdata = data.reblog !== null ? data.reblog : data;
-
-  return (
-    <div className={css({})}>
-      <DetailPost data={postdata} />
-    </div>
-  );
-};
-
 const PostDetailLine: FC<Props> = ({ postId, columnIndex }) => {
-  const { data, status } = usePost({ id: postId });
+  const { status, data } = usePost({ id: postId });
+  // const { data: replyData, status: replyStatus } = useReplies({ id: postId });
   const [_, dispatch] = useAtom(ColumnsAtom);
+
+  // useEffect(() => {
+  //   if (replyStatus === "success") {
+  //     console.log(replyData);
+  //   }
+  // }, [replyStatus, replyData]);
 
   return (
     <LineWrapper>
@@ -38,7 +34,7 @@ const PostDetailLine: FC<Props> = ({ postId, columnIndex }) => {
       </LineHeader>
       <LineContent>
         {status === "success" ? (
-          <PostDetailLineCore data={data} />
+          <DetailPost dataAtom={data} />
         ) : (
           "Now Loading..."
         )}

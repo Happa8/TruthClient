@@ -1,17 +1,22 @@
 import { css } from "@/styled-system/css";
 import { FC, Suspense } from "react";
-import { TPost } from "@/src/hooks/connection";
+import { TPostAtom } from "@/src/hooks/connection";
 import { getContentFromPost } from "@/src//utils";
 import Media from "./Media";
 import InnerPost from "./InnerPost";
 import InnerCard from "./InnerCard";
 import PostHeader from "./PostHeader";
+import FavouriteIconButton from "./FavouriteIconButton";
+import { useAtomValue } from "jotai";
+import RepostIconButton from "./RepostIconButton";
+import ReplyIconButton from "./ReplyIconButton";
 
 type Props = {
-  data: TPost;
+  dataAtom: TPostAtom;
 };
 
-const DetailPostCore: FC<Props> = ({ data }) => {
+const DetailPostCore: FC<Props> = ({ dataAtom }) => {
+  const data = useAtomValue(dataAtom);
   const postdata = data.reblog !== null ? data.reblog : data;
   const content = getContentFromPost(postdata.content);
 
@@ -110,6 +115,22 @@ const DetailPostCore: FC<Props> = ({ data }) => {
           <span>Likes</span>
         </span>
       </p>
+
+      <div
+        className={css({
+          display: "flex",
+          justifyContent: "space-between",
+          fontSize: "xl",
+          alignItems: "center",
+          marginTop: 2,
+          px: 4,
+          color: "gray.500",
+        })}
+      >
+        <ReplyIconButton dataAtom={dataAtom} displayCount={false} />
+        <RepostIconButton dataAtom={dataAtom} displayCount={false} />
+        <FavouriteIconButton dataAtom={dataAtom} displayCount={false} />
+      </div>
     </div>
   );
 };

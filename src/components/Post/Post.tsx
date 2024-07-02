@@ -5,9 +5,8 @@ import Media from "./Media";
 import { getContentFromPost } from "../../utils";
 import InnerPost from "./InnerPost";
 import InnerCard from "./InnerCard";
-import { useFavouritePost, useUnfavouritePost } from "../../hooks/post";
 import FavouriteIconButton from "./FavouriteIconButton";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import RepostIconButton from "./RepostIconButton";
 import { ColumnsAtom } from "../../atoms";
 import ReplyIconButton from "./ReplyIconButton";
@@ -33,7 +32,7 @@ const contentStyle = cva({
 });
 
 const Post: FC<Props> = ({ dataAtom }) => {
-  const [data, setData] = useAtom(dataAtom);
+  const data = useAtomValue(dataAtom);
 
   // RTかどうかを判定
   const isRepost = data.reblog !== null;
@@ -42,10 +41,6 @@ const Post: FC<Props> = ({ dataAtom }) => {
 
   // 投稿の内容を取得（RTとかのデータを除去）
   const content = getContentFromPost(postdata.content);
-
-  // いいね機能のフック
-  const { mutateAsync: favouritePost } = useFavouritePost();
-  const { mutateAsync: unfavouritePost } = useUnfavouritePost();
 
   // カラムの状態を管理するアトム
   const [_, dispatchColumn] = useAtom(ColumnsAtom);
@@ -210,7 +205,6 @@ const Post: FC<Props> = ({ dataAtom }) => {
               display: "inline-flex",
               gap: 6,
               fontSize: "sm",
-              color: "gray.700",
             })}
             onClick={(e) => {
               e.stopPropagation();
@@ -218,44 +212,7 @@ const Post: FC<Props> = ({ dataAtom }) => {
           >
             <ReplyIconButton dataAtom={dataAtom} />
             <RepostIconButton dataAtom={dataAtom} />
-            <FavouriteIconButton
-              count={postdata.favouritesCount}
-              isFavourite={postdata.favourited}
-              onClick={() => {
-                if (!isRepost) {
-                  setData({
-                    ...data,
-                    favourited: !postdata.favourited,
-                    favouritesCount: postdata.favourited
-                      ? postdata.favouritesCount > 0
-                        ? postdata.favouritesCount - 1
-                        : postdata.favouritesCount
-                      : postdata.favouritesCount + 1,
-                  });
-                } else {
-                  if (data.reblog?.id !== undefined) {
-                    setData({
-                      ...data,
-                      reblog: {
-                        ...data.reblog,
-                        favourited: !postdata.favourited,
-                        favouritesCount: postdata.favourited
-                          ? postdata.favouritesCount > 0
-                            ? postdata.favouritesCount - 1
-                            : postdata.favouritesCount
-                          : postdata.favouritesCount + 1,
-                      },
-                    });
-                  }
-                }
-
-                if (!postdata.favourited) {
-                  favouritePost({ id: postdata.id });
-                } else {
-                  unfavouritePost({ id: postdata.id });
-                }
-              }}
-            />
+            <FavouriteIconButton dataAtom={dataAtom} />
           </div>
         </div>
       </div>
