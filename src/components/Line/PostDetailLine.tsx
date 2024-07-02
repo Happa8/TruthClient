@@ -1,4 +1,4 @@
-import { FC, memo, useEffect } from "react";
+import { FC, memo } from "react";
 import { usePost } from "../../hooks/connection";
 import LineWrapper from "@/src/components/Line/LineWrapper";
 import LineHeader from "./LineHeader";
@@ -6,7 +6,6 @@ import { ColumnsAtom } from "../../atoms";
 import { useAtom } from "jotai";
 import DetailPost from "../Post/DetailPost";
 import LineContent from "./LineContent";
-import { useReplies } from "@/src/hooks/reply";
 
 type Props = {
   postId: string;
