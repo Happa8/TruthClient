@@ -1,7 +1,7 @@
 import { TMedia } from "@/src/hooks/connection";
 import { Portal } from "@zag-js/react";
 import { css } from "@/styled-system/css";
-import { FC, memo, useState } from "react";
+import { FC, useState } from "react";
 import { Dialog, HoverCard } from "@ark-ui/react";
 import { MdClose } from "react-icons/md";
 
