@@ -1,42 +1,41 @@
 import { TMedia } from "@/src/hooks/connection";
-import * as hovercard from "@zag-js/hover-card";
-import { useMachine, normalizeProps, Portal } from "@zag-js/react";
+import { Portal } from "@zag-js/react";
 import { css } from "@/styled-system/css";
-import { FC } from "react";
+import { FC, useState } from "react";
+import { Dialog, HoverCard } from "@ark-ui/react";
+import { MdClose } from "react-icons/md";
 
 type Props = {
   data: TMedia;
 };
 
 const Image: FC<Props> = ({ data }) => {
-  const [state, send] = useMachine(hovercard.machine({ id: data.id }));
-  const api = hovercard.connect(state, send, normalizeProps);
-  // const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   return (
     <>
-      <img
-        src={data.previewUrl}
-        alt={data.description}
-        key={data.id}
-        className={css({
-          overflow: "hidden",
-          w: "100%",
-          h: "100%",
-          objectFit: "cover",
-        })}
-        // onClick={() => {
-        //   setIsModalOpen(true);
-        // }}
-        {...api.triggerProps}
-      />
-      {api.isOpen && (
+      <HoverCard.Root>
+        <HoverCard.Trigger>
+          <img
+            src={data.previewUrl}
+            alt={data.description}
+            key={data.id}
+            className={css({
+              overflow: "hidden",
+              w: "100%",
+              h: "100%",
+              objectFit: "cover",
+              cursor: "pointer",
+            })}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsModalOpen(true);
+            }}
+          />
+        </HoverCard.Trigger>
         <Portal>
-          <div {...api.positionerProps}>
-            <div {...api.contentProps}>
-              <div {...api.arrowProps}>
-                <div {...api.arrowTipProps} />
-              </div>
+          <HoverCard.Positioner>
+            <HoverCard.Content>
               <img
                 className={css({
                   maxW: "40vw",
@@ -46,26 +45,89 @@ const Image: FC<Props> = ({ data }) => {
                 })}
                 src={data.previewUrl}
               />
-            </div>
-          </div>
+            </HoverCard.Content>
+          </HoverCard.Positioner>
         </Portal>
-      )}
-      {/* {isModalOpen && (
+      </HoverCard.Root>
+      <Dialog.Root
+        open={isModalOpen}
+        onOpenChange={(e) => {
+          setIsModalOpen(e.open);
+        }}
+      >
         <Portal>
-          <div
+          <Dialog.Backdrop
             className={css({
-              position: "absolute",
-              top: 0,
-              left: 0,
-              w: "100svw",
-              h: "100svh",
-              bgColor: "black",
-              overscrollBehavior: "contain",
-              overflow: "hidden",
+              bgColor: "rgba(0, 0, 0, 0.5)",
+              position: "fixed",
+              inset: 0,
             })}
-          ></div>
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          />
+          <Dialog.Positioner
+            className={css({
+              height: "100vh",
+              width: "100vw",
+              display: "flex",
+              position: "fixed",
+              inset: 0,
+            })}
+            onClick={(e) => {
+              setIsModalOpen(false);
+              e.stopPropagation();
+            }}
+          >
+            <Dialog.Content>
+              <div
+                className={css({
+                  w: "100svw",
+                  h: "100svh",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  objectFit: "contain",
+                  position: "relative",
+                })}
+              >
+                <img
+                  className={css({
+                    maxW: "80%",
+                    maxH: "80%",
+                    display: "block",
+                    margin: "auto",
+                    position: "fixed",
+                    inset: 0,
+                    borderRadius: "sm",
+                    boxShadow: "md",
+                  })}
+                  src={data.previewUrl}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                />
+              </div>
+              <div
+                className={css({
+                  position: "absolute",
+                  top: 10,
+                  right: 10,
+                  fontSize: "x-large",
+                  color: "gray.300",
+                  cursor: "pointer",
+                })}
+                onClick={(e) => {
+                  setIsModalOpen(false);
+                  e.stopPropagation();
+                }}
+              >
+                <MdClose />
+              </div>
+            </Dialog.Content>
+          </Dialog.Positioner>
         </Portal>
-      )} */}
+      </Dialog.Root>
     </>
   );
 };
