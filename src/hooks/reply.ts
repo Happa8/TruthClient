@@ -22,9 +22,10 @@ type TPostContext = {
 const createPostTree = (posts: TPost[]): TPostTree[] => {
   // postsに含まれるpostの中から、post.idがどのpost.in_reply_to_idとも一致しないpostを取得
   // これらがツリーの一番上の要素となる
-  const rootPosts = posts.filter(
-    (post) => !posts.some((p) => p.id === post.inReplyTo?.id)
+  const rootPosts = posts.filter((post) =>
+    posts.every((p) => post.id !== p.inReplyTo?.id)
   );
+  console.log(rootPosts);
 
   // ツリーの上の要素から、子要素を再帰的に取得
   const createTree = (post: TPost): TPostTree => {

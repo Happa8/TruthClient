@@ -15,6 +15,7 @@ import RepostNote from "./RepostNote";
 
 type Props = {
   dataAtom: TPostAtom;
+  isTree?: boolean;
 };
 
 const contentStyle = cva({
@@ -31,7 +32,29 @@ const contentStyle = cva({
   },
 });
 
-const Post: FC<Props> = ({ dataAtom }) => {
+const postStyle = cva({
+  base: {
+    bgColor: "gray.100",
+    borderBottom: "solid",
+    borderColor: "gray.200",
+    w: "100%",
+    display: "flex",
+    flexDir: "column",
+    gap: 0,
+  },
+  variants: {
+    isTree: {
+      true: {
+        borderBottomWidth: 0,
+      },
+      false: {
+        borderBottomWidth: 2,
+      },
+    },
+  },
+});
+
+const Post: FC<Props> = ({ dataAtom, isTree = false }) => {
   const data = useAtomValue(dataAtom);
 
   // RTかどうかを判定
@@ -78,15 +101,8 @@ const Post: FC<Props> = ({ dataAtom }) => {
 
   return (
     <div
-      className={css({
-        bgColor: "gray.100",
-        borderY: "solid",
-        borderYWidth: 1,
-        borderColor: "gray.200",
-        w: "100%",
-        display: "flex",
-        flexDir: "column",
-        gap: 0,
+      className={postStyle({
+        isTree: isTree,
       })}
     >
       <div
@@ -118,101 +134,130 @@ const Post: FC<Props> = ({ dataAtom }) => {
         <PostHeader postdata={postdata} />
         <div
           className={css({
-            display: "flex",
-            flexDir: "column",
+            display: "grid",
+            gridTemplateColumns: "2rem minmax(0,1fr)",
             gap: 2,
-            marginLeft: 10,
+            w: "100%",
           })}
         >
-          {postdata.inReplyTo !== undefined && (
-            <div>
-              <p
-                className={css({
-                  fontSize: "small",
-                  color: "gray.700",
-                })}
-              >
-                Replying to {postdata.mentions.length == 0 && <span>post</span>}
-                {postdata.mentions.map((m) => (
-                  <span
-                    className={css({
-                      color: "green.700",
-                    })}
-                    key={m.id}
-                  >
-                    @{m.username}&nbsp;
-                  </span>
-                ))}
-              </p>
-            </div>
-          )}
-
-          {/* 本文 */}
-          <div>
-            <div
-              className={contentStyle({
-                isShrinked: !isExpanded,
-              })}
-            >
+          <div
+            className={css({
+              flexShrink: 0,
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "center",
+            })}
+          >
+            {isTree && (
               <div
                 className={css({
-                  "& p:nth-child(n+2)": {
-                    marginTop: "1rem",
-                  },
-                  "& p a.hashtag": {
-                    color: "green.700",
-                  },
-                  "& p a": {
-                    color: "blue.700",
+                  w: "2px",
+                  bgColor: "gray.300",
+                  marginTop: "-8px",
+                  marginBottom: "-16px",
+                })}
+              />
+            )}
+          </div>
+          <div
+            className={css({
+              display: "flex",
+              flexDir: "column",
+              gap: 2,
+            })}
+          >
+            {(postdata.inReplyTo !== undefined ||
+              postdata.mentions.length > 0) && (
+              <div>
+                <p
+                  className={css({
+                    fontSize: "small",
+                    color: "gray.700",
+                  })}
+                >
+                  Replying to{" "}
+                  {postdata.mentions.length == 0 && <span>post</span>}
+                  {postdata.mentions.map((m) => (
+                    <span
+                      className={css({
+                        color: "green.700",
+                      })}
+                      key={m.id}
+                    >
+                      @{m.username}&nbsp;
+                    </span>
+                  ))}
+                </p>
+              </div>
+            )}
+
+            {/* 本文 */}
+            <div>
+              <div
+                className={contentStyle({
+                  isShrinked: !isExpanded,
+                })}
+              >
+                <div
+                  className={css({
+                    "& p:nth-child(n+2)": {
+                      marginTop: "1rem",
+                    },
+                    "& p a.hashtag": {
+                      color: "green.700",
+                    },
+                    "& p a": {
+                      color: "blue.700",
+                    },
+                  })}
+                  dangerouslySetInnerHTML={{ __html: content }}
+                  ref={contentDivRef}
+                />
+              </div>
+              <button
+                className={css({
+                  display: isExpanded ? "none" : "inline-flex",
+                  border: "none",
+                  bg: "transparent",
+                  color: "blue.700",
+                  cursor: "pointer",
+                  _hover: {
+                    textDecoration: "underline",
                   },
                 })}
-                dangerouslySetInnerHTML={{ __html: content }}
-                ref={contentDivRef}
-              />
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsExpanded(true);
+                }}
+              >
+                Expand Truth
+              </button>
             </div>
-            <button
+
+            {postdata.mediaAttachments.length !== 0 && (
+              <Media medias={postdata.mediaAttachments} />
+            )}
+            {postdata.quote !== undefined && (
+              <InnerPost postdata={postdata.quote} />
+            )}
+            {postdata.card !== undefined && (
+              <InnerCard carddata={postdata.card} />
+            )}
+
+            <div
               className={css({
-                display: isExpanded ? "none" : "inline-flex",
-                border: "none",
-                bg: "transparent",
-                color: "blue.700",
-                cursor: "pointer",
-                _hover: {
-                  textDecoration: "underline",
-                },
+                display: "inline-flex",
+                gap: 6,
+                fontSize: "sm",
               })}
               onClick={(e) => {
                 e.stopPropagation();
-                setIsExpanded(true);
               }}
             >
-              Expand Truth
-            </button>
-          </div>
-
-          {postdata.mediaAttachments.length !== 0 && (
-            <Media medias={postdata.mediaAttachments} />
-          )}
-          {postdata.quote !== undefined && (
-            <InnerPost postdata={postdata.quote} />
-          )}
-          {postdata.card !== undefined && (
-            <InnerCard carddata={postdata.card} />
-          )}
-
-          <div
-            className={css({
-              display: "inline-flex",
-              gap: 6,
-              fontSize: "sm",
-            })}
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
-          >
-            <ReplyIconButton dataAtom={dataAtom} />
-            <RepostIconButton dataAtom={dataAtom} />
-            <FavouriteIconButton dataAtom={dataAtom} />
+              <ReplyIconButton dataAtom={dataAtom} />
+              <RepostIconButton dataAtom={dataAtom} />
+              <FavouriteIconButton dataAtom={dataAtom} />
+            </div>
           </div>
         </div>
       </div>
