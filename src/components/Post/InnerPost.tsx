@@ -30,7 +30,7 @@ const InnerPostCore: FC<CoreProps> = ({
   return (
     <div
       className={css({
-        w: "100%",
+        // w: "100%",
         border: "solid",
         borderColor: "gray.300",
         borderWidth: 1,

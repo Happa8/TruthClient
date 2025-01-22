@@ -449,6 +449,75 @@ export const usePost = ({ id }: { id: string }) => {
   });
 };
 
+export const getTagTimeline = async (
+  accessToken: string,
+  tag: string,
+  maxId?: string
+): Promise<TPost[]> => {
+  const query = maxId === undefined || maxId === "" ? "" : `?max_id=${maxId}`;
+
+  const res = await fetch(
+    `https://truthsocial.com/api/v1/timelines/tag/${tag}${query}`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+  return await res.json().then((res) => {
+    return res.map((d: any) => {
+      console.log(d);
+      const cpost = convertPost(d);
+      console.log("cp", cpost);
+      return cpost;
+    });
+  });
+};
+
+export const useGetTagTimeline = ({ tag }: { tag: string }) => {
+  const [accessToken] = useAtom(tokenAtom);
+
+  const postListAtom = useMemo(() => atom<TPostAtom[]>([]), []);
+  const updatePostListAtom = useUpdateListAtom(postListAtom);
+  const [_a, updatePostList] = useAtom(updatePostListAtom);
+  const postList = useAtomValue(postListAtom);
+  const posts = useCorrectAllValues(postListAtom);
+
+  const fetchTag = useCallback(
+    async ({ pageParam } = { pageParam: "" }) => {
+      const res = await getTagTimeline(accessToken, tag, pageParam);
+      console.log("aaa", res);
+      return res;
+    },
+    [accessToken, tag]
+  );
+
+  const { data, fetchNextPage, isFetching } = useInfiniteQuery({
+    queryKey: ["tag", tag],
+    queryFn: fetchTag,
+    initialPageParam: "",
+    getNextPageParam: (lastPage) => lastPage[lastPage.length - 1].id,
+    staleTime: 1000,
+  });
+
+  useEffect(() => {
+    data?.pages.flat().map((d) => {
+      updatePostList(convertPost(d), "LI");
+    });
+  }, [data, fetchTag]);
+
+  const loadMoreTag = () => {
+    fetchNextPage();
+  };
+
+  return {
+    posts,
+    postList,
+    loadMoreTag,
+    isFetching,
+  };
+};
+
 export const useGetPostSuspense = ({ id }: { id: string }) => {
   const [accessToken] = useAtom(tokenAtom);
 
@@ -578,18 +647,30 @@ export const useTimeline = () => {
 
   useEffect(() => {
     data?.pages.flat().map((d) => {
-      const newPost = convertPost(d);
-      if (!muteAccounts?.find((account) => account.id === newPost.account.id)) {
-        updatePostList(newPost, "LI");
+      try {
+        const newPost = convertPost(d);
+        if (
+          !muteAccounts?.find((account) => account.id === newPost.account.id)
+        ) {
+          updatePostList(newPost, "LI");
+        }
+      } catch (e) {
+        console.error(e);
       }
     });
   }, [data, fetchHome]);
 
   useEffect(() => {
     noteData?.pages.flat().map((d) => {
-      const newNote = convertNotification(d);
-      if (!muteAccounts?.find((account) => account.id === newNote.account.id)) {
-        updateNotificationList(newNote, "LI");
+      try {
+        const newNote = convertNotification(d);
+        if (
+          !muteAccounts?.find((account) => account.id === newNote.account.id)
+        ) {
+          updateNotificationList(newNote, "LI");
+        }
+      } catch (e) {
+        console.error(e);
       }
     });
   }, [noteData, fetchNotification]);
@@ -607,24 +688,34 @@ export const useTimeline = () => {
       const receivedMessage = JSON.parse(event.data);
       switch (receivedMessage["event"]) {
         case "update": {
-          const newPost = convertPost(JSON.parse(receivedMessage["payload"]));
-          if (
-            !muteAccounts?.find((account) => account.id === newPost.account.id)
-          ) {
-            updatePostList(newPost);
+          try {
+            const newPost = convertPost(JSON.parse(receivedMessage["payload"]));
+            if (
+              !muteAccounts?.find(
+                (account) => account.id === newPost.account.id
+              )
+            ) {
+              updatePostList(newPost);
+            }
+          } catch (e) {
+            console.error(e);
           }
           break;
         }
         case "notification": {
-          const newNotification = convertNotification(
-            JSON.parse(receivedMessage["payload"])
-          );
-          if (
-            !muteAccounts?.find(
-              (account) => account.id === newNotification.account.id
-            )
-          ) {
-            updateNotificationList(newNotification);
+          try {
+            const newNotification = convertNotification(
+              JSON.parse(receivedMessage["payload"])
+            );
+            if (
+              !muteAccounts?.find(
+                (account) => account.id === newNotification.account.id
+              )
+            ) {
+              updateNotificationList(newNotification);
+            }
+          } catch (e) {
+            console.error(e);
           }
           break;
         }

@@ -14,7 +14,7 @@ const InnerCard: FC<Props> = ({ carddata }) => {
       target="_blank"
       rel="noopener noreferrer"
       className={css({
-        w: "100%",
+        // w: "100%",
         border: "solid",
         borderColor: "gray.300",
         borderWidth: 1,

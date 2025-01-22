@@ -6,6 +6,8 @@ import { ColumnsAtom } from "../../atoms";
 import { useAtom } from "jotai";
 import DetailPost from "../Post/DetailPost";
 import LineContent from "./LineContent";
+import { useReplies } from "@/src/hooks/reply";
+import PostTree from "../Post/PostTree";
 
 type Props = {
   postId: string;
@@ -33,11 +35,17 @@ const PostDetailLine: FC<Props> = ({ postId, columnIndex }) => {
         Post Detail
       </LineHeader>
       <LineContent>
+        {/* {replyStatus === "success" ? (
+          <PostTree tree={replyData.parent} type="parent" />
+        ) : null} */}
         {status === "success" ? (
           <DetailPost dataAtom={data} />
         ) : (
           "Now Loading..."
         )}
+        {/* {replyStatus === "success" ? (
+          <PostTree tree={replyData.children} type="children" />
+        ) : null} */}
       </LineContent>
     </LineWrapper>
   );

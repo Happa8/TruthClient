@@ -3,6 +3,7 @@ import { css } from "../styled-system/css";
 import HomeLine from "./components/Line/HomeLine";
 import NoteLine from "./components/Line/NoteLine";
 import SendLine from "./components/Line/SendLine";
+import TagTimeLine from "./components/Line/TagTimeLine";
 import { ColumnsAtom, tokenAtom } from "./atoms";
 import PostDetailLine from "./components/Line/PostDetailLine";
 import Login from "./components/Page/Login";
@@ -62,6 +63,8 @@ function App() {
                     columnIndex={i}
                   />
                 );
+              case "Tag":
+                return <TagTimeLine key={i} tag={column.tag} />;
               default:
                 return <></>;
             }
