@@ -3,7 +3,7 @@ import { css } from "@/styled-system/css";
 import LineHeader from "./LineHeader";
 import LineWrapper from "./LineWrapper";
 import Post from "@/src/components/Post/Post";
-import { useGetTagTimeline, useTimeline } from "@/src/hooks/connection";
+import { useGetTagTimeline } from "@/src/hooks/connection";
 import { VList, VListHandle } from "virtua";
 import { useOnScreen } from "@/src/hooks/useOnScreen";
 
