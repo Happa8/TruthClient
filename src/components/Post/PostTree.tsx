@@ -1,6 +1,5 @@
 import { TPostTree } from "@/src/hooks/reply";
-import { css, cx } from "@/styled-system/css";
-import { FC, ReactNode } from "react";
+import { FC } from "react";
 import Post from "./Post";
 
 type Props = {
