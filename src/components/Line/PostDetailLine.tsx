@@ -6,15 +6,13 @@ import { ColumnsAtom } from "../../atoms";
 import { useAtom } from "jotai";
 import DetailPost from "../Post/DetailPost";
 import LineContent from "./LineContent";
-import { useReplies } from "@/src/hooks/reply";
-import PostTree from "../Post/PostTree";
 
 type Props = {
   postId: string;
   columnIndex: number;
 };
 
-const PostDetailLine: FC<Props> = ({ postId, columnIndex }) => {
+export const PostDetailLine: FC<Props> = ({ postId, columnIndex }) => {
   const { status, data } = usePost({ id: postId });
   // const { data: replyData, status: replyStatus } = useReplies({ id: postId });
   const [_, dispatch] = useAtom(ColumnsAtom);

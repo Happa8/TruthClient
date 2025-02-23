@@ -11,8 +11,8 @@ type Props = {
   tag: string;
 };
 
-const TagTimeLine: FC<Props> = ({ tag }) => {
-  const [searchTag, setSearchTag] = useState<string>(tag);
+export const TagTimeLine: FC<Props> = ({ tag }) => {
+  const [searchTag, _setSearchTag] = useState<string>(tag);
   const { postList, loadMoreTag, isFetching, posts } = useGetTagTimeline({
     tag: searchTag,
   });
