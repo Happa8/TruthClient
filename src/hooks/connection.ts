@@ -598,7 +598,7 @@ export const useTimeline = () => {
   const fetchHome = useCallback(
     async ({ pageParam } = { pageParam: "" }) => {
       const res = await fetch(
-        `https://truthsocial.com/api/v1/timelines/home?max_id=${pageParam}`,
+        `https://truthsocial.com/api/v1/timelines/following?max_id=${pageParam}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
