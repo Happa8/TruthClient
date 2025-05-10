@@ -14,9 +14,20 @@ export type RecipeSelection<T extends RecipeVariantRecord> = keyof any extends k
 
 export type RecipeVariantFn<T extends RecipeVariantRecord> = (props?: RecipeSelection<T>) => string
 
+/**
+ * Extract the variant as optional props from a `cva` function.
+ * Intended to be used with a JSX component, prefer `RecipeVariant` for a more strict type.
+ */
 export type RecipeVariantProps<
   T extends RecipeVariantFn<RecipeVariantRecord> | SlotRecipeVariantFn<string, SlotRecipeVariantRecord<string>>,
 > = Pretty<Parameters<T>[0]>
+
+/**
+ * Extract the variants from a `cva` function.
+ */
+export type RecipeVariant<
+  T extends RecipeVariantFn<RecipeVariantRecord> | SlotRecipeVariantFn<string, SlotRecipeVariantRecord<string>>,
+> = Exclude<Pretty<Required<RecipeVariantProps<T>>>, undefined>
 
 type RecipeVariantMap<T extends RecipeVariantRecord> = {
   [K in keyof T]: Array<keyof T[K]>
@@ -35,6 +46,7 @@ export interface RecipeRuntimeFn<T extends RecipeVariantRecord> extends RecipeVa
   splitVariantProps<Props extends RecipeSelection<T>>(
     props: Props,
   ): [RecipeSelection<T>, Pretty<DistributiveOmit<Props, keyof T>>]
+  getVariantProps: (props?: RecipeSelection<T>) => RecipeSelection<T>
 }
 
 type OneOrMore<T> = T | Array<T>
@@ -47,11 +59,15 @@ export type RecipeCompoundVariant<T> = T & {
   css: SystemStyleObject
 }
 
-export interface RecipeDefinition<T extends RecipeVariantRecord> {
+export interface RecipeDefinition<T extends RecipeVariantRecord = RecipeVariantRecord> {
   /**
    * The base styles of the recipe.
    */
   base?: SystemStyleObject
+  /**
+   * Whether the recipe is deprecated.
+   */
+  deprecated?: boolean | string
   /**
    * The multi-variant styles of the recipe.
    */
@@ -64,17 +80,13 @@ export interface RecipeDefinition<T extends RecipeVariantRecord> {
    * The styles to apply when a combination of variants is selected.
    */
   compoundVariants?: Pretty<RecipeCompoundVariant<RecipeCompoundSelection<T>>>[]
-  /**
-   * Variants to pre-generate, will be include in the final `config.staticCss`
-   */
-  staticCss?: RecipeRule[]
 }
 
 export type RecipeCreatorFn = <T extends RecipeVariantRecord>(config: RecipeDefinition<T>) => RecipeRuntimeFn<T>
 
 interface RecipeConfigMeta {
   /**
-   * The name of the recipe.
+   * The class name of the recipe.
    */
   className: string
   /**
@@ -88,6 +100,10 @@ interface RecipeConfigMeta {
    * @example ['Button', 'Link', /Button$/]
    */
   jsx?: Array<string | RegExp>
+  /**
+   * Variants to pre-generate, will be include in the final `config.staticCss`
+   */
+  staticCss?: RecipeRule[]
 }
 
 export interface RecipeConfig<T extends RecipeVariantRecord = RecipeVariantRecord>
@@ -111,14 +127,28 @@ export interface SlotRecipeRuntimeFn<S extends string, T extends SlotRecipeVaria
   raw: (props?: RecipeSelection<T>) => Record<S, SystemStyleObject>
   variantKeys: (keyof T)[]
   variantMap: RecipeVariantMap<T>
-  splitVariantProps<Props extends RecipeSelection<T>>(props: Props): [RecipeSelection<T>, Pretty<Omit<Props, keyof T>>]
+  splitVariantProps<Props extends RecipeSelection<T>>(
+    props: Props,
+  ): [RecipeSelection<T>, Pretty<DistributiveOmit<Props, keyof T>>]
+  getVariantProps: (props?: RecipeSelection<T>) => RecipeSelection<T>
 }
 
 export type SlotRecipeCompoundVariant<S extends string, T> = T & {
   css: SlotRecord<S, SystemStyleObject>
 }
 
-export interface SlotRecipeDefinition<S extends string, T extends SlotRecipeVariantRecord<S>> {
+export interface SlotRecipeDefinition<
+  S extends string = string,
+  T extends SlotRecipeVariantRecord<S> = SlotRecipeVariantRecord<S>,
+> {
+  /**
+   * An optional class name that can be used to target slots in the DOM.
+   */
+  className?: string
+  /**
+   * Whether the recipe is deprecated.
+   */
+  deprecated?: boolean | string
   /**
    * The parts/slots of the recipe.
    */

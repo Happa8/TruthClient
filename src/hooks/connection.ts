@@ -633,7 +633,7 @@ export const useTimeline = () => {
   const notificationList = useAtomValue(notificationListAtom);
   const notifications = useCorrectAllValues(notificationListAtom);
 
-  const socketRef = useRef<WebSocket>();
+  const socketRef = useRef<WebSocket>(null);
 
   const fetchHome = useCallback(
     async ({ pageParam } = { pageParam: "" }) => {
