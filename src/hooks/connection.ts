@@ -72,7 +72,7 @@ export type TPoll = {
   voted: boolean;
   votesCount: number;
   votersCount: number;
-  ownVotes: [];
+  ownVotes: number[];
 };
 
 export type TNotification = {
@@ -367,7 +367,7 @@ const convertGroup = (data: any): TGroup => {
   return group;
 };
 
-const convertPoll = (data: any): TPoll => {
+export const convertPoll = (data: any): TPoll => {
   const poll: TPoll = {
     expired: data.expired,
     expiresAt: new Date(data.expires_at),
@@ -382,10 +382,8 @@ const convertPoll = (data: any): TPoll => {
     voted: data.voted,
     votesCount: data.votes_count,
     votersCount: data.voters_count,
-    ownVotes: [],
+    ownVotes: data.own_votes,
   };
-
-  console.log("poll", data, poll);
 
   return poll;
 };

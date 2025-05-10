@@ -1,7 +1,7 @@
 import { useAtom } from "jotai";
 import { tokenAtom } from "../atoms";
 import { useMutation } from "@tanstack/react-query";
-import { TPost, convertPost } from "./connection";
+import { TPoll, TPost, convertPoll, convertPost } from "./connection";
 
 export type TPostSend = {
   content: string;
@@ -130,5 +130,39 @@ export const useRepost = () => {
         return unrepost(accessToken, data);
       }
     },
+  });
+};
+
+const votePoll = async (
+  accessToken: string,
+  data: TPoll,
+  choiseIndex: number[]
+) => {
+  const res = await fetch(
+    `https://truthsocial.com/api/v1/polls/${data.id}/votes`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        choices: choiseIndex.map((index) => `${index}`),
+      }),
+    }
+  )
+    .then((res) => res.json())
+    .then((res) => {
+      return convertPoll(res);
+    });
+  return res;
+};
+
+export const useVotePoll = () => {
+  const [accessToken] = useAtom(tokenAtom);
+
+  return useMutation({
+    mutationFn: (data: { poll: TPoll; choiseIndex: number[] }) =>
+      votePoll(accessToken, data.poll, data.choiseIndex),
   });
 };

@@ -6,6 +6,7 @@ import { calcTimeDelta, getContentFromPost } from "../../utils";
 import { atom, useAtom, useAtomValue } from "jotai";
 import { ColumnsAtom } from "../../atoms";
 import Media from "./Media";
+import Poll from "./Poll";
 
 type Props =
   | (({ id: string } | { postdata: TPost }) & Omit<CoreProps, "dataAtom">)
@@ -15,12 +16,14 @@ type CoreProps = {
   dataAtom: TPostAtom;
   showCard?: boolean;
   showMedia?: boolean;
+  showPoll?: boolean;
 };
 
 const InnerPostCore: FC<CoreProps> = ({
   dataAtom,
   showCard = true,
   showMedia = true,
+  showPoll = true,
 }) => {
   const data = useAtomValue(dataAtom);
   const postdata = data.reblog !== null ? data.reblog : data;
@@ -75,6 +78,11 @@ const InnerPostCore: FC<CoreProps> = ({
       )}
       {postdata.card !== undefined && showCard ? (
         <InnerCard carddata={postdata.card} />
+      ) : (
+        <></>
+      )}
+      {postdata.poll !== undefined && showPoll ? (
+        <Poll data={postdata.poll} />
       ) : (
         <></>
       )}
