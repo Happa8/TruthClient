@@ -57,6 +57,22 @@ export type TPost = {
   url: string;
   uri: string;
   group?: TGroup;
+  poll?: TPoll;
+};
+
+export type TPoll = {
+  expired: boolean;
+  expiresAt: Date;
+  id: string;
+  multiple: boolean;
+  options: {
+    title: string;
+    votesCount: number;
+  }[];
+  voted: boolean;
+  votesCount: number;
+  votersCount: number;
+  ownVotes: [];
 };
 
 export type TNotification = {
@@ -351,6 +367,29 @@ const convertGroup = (data: any): TGroup => {
   return group;
 };
 
+const convertPoll = (data: any): TPoll => {
+  const poll: TPoll = {
+    expired: data.expired,
+    expiresAt: new Date(data.expires_at),
+    id: data.id,
+    multiple: data.multiple,
+    options: data.options.map((d: any) => {
+      return {
+        title: d.title,
+        votesCount: d.votes_count,
+      };
+    }),
+    voted: data.voted,
+    votesCount: data.votes_count,
+    votersCount: data.voters_count,
+    ownVotes: [],
+  };
+
+  console.log("poll", data, poll);
+
+  return poll;
+};
+
 export const convertPost = (data: any): TPost => {
   const post: TPost = {
     account: convertAccount(data.account),
@@ -388,6 +427,7 @@ export const convertPost = (data: any): TPost => {
     url: data.url,
     uri: data.uri,
     group: data.group === null ? undefined : convertGroup(data.group),
+    poll: data.poll === null ? undefined : convertPoll(data.poll),
   };
 
   return post;

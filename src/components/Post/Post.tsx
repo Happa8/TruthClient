@@ -12,6 +12,7 @@ import { ColumnsAtom } from "../../atoms";
 import ReplyIconButton from "./ReplyIconButton";
 import PostHeader from "./PostHeader";
 import RepostNote from "./RepostNote";
+import Poll from "./Poll";
 
 type Props = {
   dataAtom: TPostAtom;
@@ -243,6 +244,7 @@ const Post: FC<Props> = ({ dataAtom, isTree = false }) => {
             {postdata.card !== undefined && (
               <InnerCard carddata={postdata.card} />
             )}
+            {postdata.poll !== undefined && <Poll data={postdata.poll} />}
 
             <div
               className={css({
