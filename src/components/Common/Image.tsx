@@ -1,5 +1,5 @@
 import { TMedia } from "@/src/hooks/connection";
-import { Portal } from "@zag-js/react";
+import { Portal } from "@ark-ui/react";
 import { css } from "@/styled-system/css";
 import { FC, useState } from "react";
 import { Dialog, HoverCard } from "@ark-ui/react";

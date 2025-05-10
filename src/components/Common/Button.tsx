@@ -16,6 +16,14 @@ const Button: FC<Props> = ({ children, className, ...props }) => {
           _hover: {
             bgColor: "gray.300",
           },
+          _disabled: {
+            cursor: "not-allowed",
+            bgColor: "gray.200",
+            color: "gray.500",
+            _hover: {
+              bgColor: "gray.200",
+            },
+          },
         }),
         className
       )}

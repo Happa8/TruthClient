@@ -12,6 +12,7 @@ import { ColumnsAtom } from "../../atoms";
 import ReplyIconButton from "./ReplyIconButton";
 import PostHeader from "./PostHeader";
 import RepostNote from "./RepostNote";
+import Poll from "./Poll";
 
 type Props = {
   dataAtom: TPostAtom;
@@ -166,30 +167,30 @@ const Post: FC<Props> = ({ dataAtom, isTree = false }) => {
               gap: 2,
             })}
           >
-            {(postdata.inReplyTo !== undefined ||
-              postdata.mentions.length > 0) && (
-              <div>
-                <p
-                  className={css({
-                    fontSize: "small",
-                    color: "gray.700",
-                  })}
-                >
-                  Replying to{" "}
-                  {postdata.mentions.length == 0 && <span>post</span>}
-                  {postdata.mentions.map((m) => (
-                    <span
-                      className={css({
-                        color: "green.700",
-                      })}
-                      key={m.id}
-                    >
-                      @{m.username}&nbsp;
-                    </span>
-                  ))}
-                </p>
-              </div>
-            )}
+            {postdata.inReplyTo !== undefined &&
+              postdata.mentions.length > 0 && (
+                <div>
+                  <p
+                    className={css({
+                      fontSize: "small",
+                      color: "gray.700",
+                    })}
+                  >
+                    Replying to{" "}
+                    {postdata.mentions.length == 0 && <span>post</span>}
+                    {postdata.mentions.map((m) => (
+                      <span
+                        className={css({
+                          color: "green.700",
+                        })}
+                        key={m.id}
+                      >
+                        @{m.username}&nbsp;
+                      </span>
+                    ))}
+                  </p>
+                </div>
+              )}
 
             {/* 本文 */}
             <div>
@@ -243,6 +244,7 @@ const Post: FC<Props> = ({ dataAtom, isTree = false }) => {
             {postdata.card !== undefined && (
               <InnerCard carddata={postdata.card} />
             )}
+            {postdata.poll !== undefined && <Poll data={postdata.poll} />}
 
             <div
               className={css({

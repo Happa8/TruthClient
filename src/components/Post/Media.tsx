@@ -21,23 +21,23 @@ const style = cva({
   variants: {
     imageNum: {
       1: {
-        gridTemplateColumns: 1,
-        gridTemplateRows: 1,
+        gridTemplateColumns: "1fr",
+        gridTemplateRows: "1fr",
       },
       2: {
-        gridTemplateColumns: 2,
-        gridTemplateRows: 1,
+        gridTemplateColumns: "50% 50%",
+        gridTemplateRows: "1fr",
       },
       3: {
-        gridTemplateColumns: 2,
-        gridTemplateRows: 2,
+        gridTemplateColumns: "50% 50%",
+        gridTemplateRows: "50% 50%",
         "& img:nth-child(1)": {
           gridRow: "1 / span 2",
         },
       },
       4: {
-        gridTemplateColumns: 2,
-        gridTemplateRows: 2,
+        gridTemplateColumns: "50% 50%",
+        gridTemplateRows: "50% 50%",
       },
     },
   },

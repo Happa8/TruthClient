@@ -10,6 +10,7 @@ import FavouriteIconButton from "./FavouriteIconButton";
 import { useAtomValue } from "jotai";
 import RepostIconButton from "./RepostIconButton";
 import ReplyIconButton from "./ReplyIconButton";
+import Poll from "./Poll";
 
 type Props = {
   dataAtom: TPostAtom;
@@ -36,6 +37,9 @@ const DetailPostCore: FC<Props> = ({ dataAtom }) => {
       <div
         className={css({
           fontSize: "md",
+          "& p:nth-child(n+2)": {
+            marginTop: "1rem",
+          },
           "& p a.hashtag": {
             color: "green.700",
           },
@@ -53,6 +57,8 @@ const DetailPostCore: FC<Props> = ({ dataAtom }) => {
       {postdata.quote !== undefined && <InnerPost postdata={postdata.quote} />}
 
       {postdata.card !== undefined && <InnerCard carddata={postdata.card} />}
+
+      {postdata.poll !== undefined && <Poll data={postdata.poll} />}
 
       <div
         className={css({

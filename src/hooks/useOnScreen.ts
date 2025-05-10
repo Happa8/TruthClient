@@ -8,7 +8,7 @@ type TargetViewPosition =
   | "BELOW_VIEWPORT"
   | "VISIBLE";
 
-export function useOnScreen(targetRef: React.RefObject<HTMLElement>) {
+export function useOnScreen(targetRef: React.RefObject<HTMLElement | null>) {
   const [targetViewPosition, setTargetViewPosition] =
     useState<TargetViewPosition>(undefined);
 
