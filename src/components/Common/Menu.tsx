@@ -38,12 +38,6 @@ export const MenuItem: FC<ArkMenu.ItemProps> = ({ children, ...props }) => {
   return (
     <ArkMenu.Item
       {...props}
-      onTouchStart={(e) =>
-        props.onClick &&
-        props.onClick(
-          e as unknown as React.MouseEvent<HTMLDivElement, MouseEvent>
-        )
-      }
       className={css({
         p: 1,
         minW: 24,

@@ -41,7 +41,7 @@ const TruthSubmitForm: FC<Props> = ({ className }) => {
   const [quotePostAtom, setQuotePostAtom] = useAtom(QuotePostAtom);
   const quotePost = useNullableAtomValue(quotePostAtom);
   useEffect(() => {
-    console.log(quotePostAtom);
+    // console.log(quotePostAtom);
   }, [quotePostAtom]);
 
   // リプライ投稿

@@ -115,9 +115,9 @@ const Post: FC<Props> = ({ dataAtom, isTree = false }) => {
           flexDir: "column",
           gap: 2,
           cursor: "pointer",
-          _hover: {
-            bgColor: "gray.200",
-          },
+          // _hover: {
+          //   bgColor: "gray.200",
+          // },
         })}
         onClick={() => {
           if (!isSelecting) {

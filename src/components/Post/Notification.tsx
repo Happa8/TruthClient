@@ -92,9 +92,9 @@ const NotificationCore: FC<{
         flexDir: "column",
         gap: 2,
         color: "gray.800",
-        _hover: {
-          bgColor: "gray.200",
-        },
+        // _hover: {
+        //   bgColor: "gray.200",
+        // },
         cursor: "pointer",
       })}
       onClick={() => {
