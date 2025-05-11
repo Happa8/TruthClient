@@ -11,6 +11,8 @@ import { useAtomValue } from "jotai";
 import RepostIconButton from "./RepostIconButton";
 import ReplyIconButton from "./ReplyIconButton";
 import Poll from "./Poll";
+import FavoriteListDialog from "./FavoriteListDialog";
+import { useDialog } from "@ark-ui/react";
 
 type Props = {
   dataAtom: TPostAtom;
@@ -20,6 +22,7 @@ const DetailPostCore: FC<Props> = ({ dataAtom }) => {
   const data = useAtomValue(dataAtom);
   const postdata = data.reblog !== null ? data.reblog : data;
   const content = getContentFromPost(postdata.content);
+  const favDialog = useDialog();
 
   return (
     <div
@@ -34,6 +37,7 @@ const DetailPostCore: FC<Props> = ({ dataAtom }) => {
       })}
     >
       <PostHeader postdata={postdata} />
+      <FavoriteListDialog postId={postdata.id} dialogValue={favDialog} />
       <div
         className={css({
           fontSize: "md",
@@ -109,7 +113,14 @@ const DetailPostCore: FC<Props> = ({ dataAtom }) => {
           &nbsp;
           <span>ReTruths</span>
         </span>
-        <span>
+        <span
+          onClick={() => {
+            favDialog.setOpen(true);
+          }}
+          className={css({
+            cursor: "pointer",
+          })}
+        >
           <span
             className={css({
               fontWeight: "bold",

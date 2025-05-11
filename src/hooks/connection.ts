@@ -504,9 +504,7 @@ export const getTagTimeline = async (
   );
   return await res.json().then((res) => {
     return res.map((d: any) => {
-      console.log(d);
       const cpost = convertPost(d);
-      console.log("cp", cpost);
       return cpost;
     });
   });
@@ -524,7 +522,6 @@ export const useGetTagTimeline = ({ tag }: { tag: string }) => {
   const fetchTag = useCallback(
     async ({ pageParam } = { pageParam: "" }) => {
       const res = await getTagTimeline(accessToken, tag, pageParam);
-      console.log("aaa", res);
       return res;
     },
     [accessToken, tag]
@@ -794,4 +791,45 @@ export const useTimeline = () => {
     loadMoreNotifications,
     isFetchingNote,
   };
+};
+
+export const useFavoritedUsers = ({
+  postId,
+  enabled = true,
+}: {
+  postId: string;
+  enabled?: boolean;
+}) => {
+  const [accessToken] = useAtom(tokenAtom);
+
+  const fetchFavoritedUsers = useCallback(
+    async ({ pageParam }: { pageParam?: string }) => {
+      const query = pageParam === undefined ? "" : `?max_id=${pageParam}`;
+      const res = await fetch(
+        `https://truthsocial.com/api/v1/statuses/${postId}/favourited_by${query}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      )
+        .then((res) => res.json())
+        .then((res) => {
+          return res.map((d: any) => {
+            return convertAccount(d);
+          });
+        });
+      return res as TAccount[];
+    },
+    [accessToken, postId]
+  );
+
+  return useInfiniteQuery({
+    queryKey: ["favoritedUsers", postId],
+    queryFn: fetchFavoritedUsers,
+    initialPageParam: undefined,
+    getNextPageParam: (lastPage) => lastPage[lastPage.length - 1].id,
+    staleTime: 1000,
+    enabled: enabled,
+  });
 };
