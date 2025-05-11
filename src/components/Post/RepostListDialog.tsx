@@ -2,20 +2,15 @@ import { UseDialogReturn } from "@ark-ui/react";
 import Dialog from "../Common/Dialog";
 import { css } from "@/styled-system/css";
 import { FC } from "react";
-import { useFavoritedUsers } from "@/src/hooks/connection";
+import { useRebloggedUsers } from "@/src/hooks/connection";
 
 type Props = {
   postId: string;
   dialogValue: UseDialogReturn;
 };
 
-const FavoriteListDialog: FC<Props> = ({ postId, dialogValue: dialog }) => {
-  const {
-    data: favoriteUsers,
-    status,
-    hasNextPage,
-    fetchNextPage,
-  } = useFavoritedUsers({
+const RepostListDialog: FC<Props> = ({ postId, dialogValue: dialog }) => {
+  const { data, status, hasNextPage, fetchNextPage } = useRebloggedUsers({
     postId: postId,
     enabled: dialog.open,
   });
@@ -24,7 +19,7 @@ const FavoriteListDialog: FC<Props> = ({ postId, dialogValue: dialog }) => {
     <>
       <Dialog
         dialogValue={dialog}
-        title="Favorited Users"
+        title="Retruthed Users"
         lazyMount={true}
         unmountOnExit={true}
       >
@@ -58,26 +53,8 @@ const FavoriteListDialog: FC<Props> = ({ postId, dialogValue: dialog }) => {
               </p>
             </div>
           )}
-          {status === "error" && (
-            <div
-              className={css({
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                height: "100%",
-              })}
-            >
-              <p
-                className={css({
-                  fontSize: "sm",
-                  color: "red.700",
-                })}
-              >
-                Error loading users
-              </p>
-            </div>
-          )}
-          {favoriteUsers?.pages
+
+          {data?.pages
             .reduce((acc, page) => {
               return acc.concat(page);
             }, [])
@@ -127,7 +104,7 @@ const FavoriteListDialog: FC<Props> = ({ postId, dialogValue: dialog }) => {
                 </div>
               </div>
             ))}
-          {hasNextPage && status === "success" && (
+          {hasNextPage && (
             <button
               className={css({
                 borderRadius: "md",
@@ -155,4 +132,4 @@ const FavoriteListDialog: FC<Props> = ({ postId, dialogValue: dialog }) => {
   );
 };
 
-export default FavoriteListDialog;
+export default RepostListDialog;

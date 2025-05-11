@@ -828,7 +828,58 @@ export const useFavoritedUsers = ({
     queryKey: ["favoritedUsers", postId],
     queryFn: fetchFavoritedUsers,
     initialPageParam: undefined,
-    getNextPageParam: (lastPage) => lastPage[lastPage.length - 1].id,
+    getNextPageParam: (lastPage) => {
+      if (lastPage.length === 0) {
+        return undefined;
+      }
+      return lastPage[lastPage.length - 1].id;
+    },
+    staleTime: 1000,
+    enabled: enabled,
+  });
+};
+
+export const useRebloggedUsers = ({
+  postId,
+  enabled = true,
+}: {
+  postId: string;
+  enabled?: boolean;
+}) => {
+  const [accessToken] = useAtom(tokenAtom);
+
+  const fetchRebloggedUsers = useCallback(
+    async ({ pageParam }: { pageParam?: string }) => {
+      const query = pageParam === undefined ? "" : `?max_id=${pageParam}`;
+      const res = await fetch(
+        `https://truthsocial.com/api/v1/statuses/${postId}/reblogged_by${query}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      )
+        .then((res) => res.json())
+        .then((res) => {
+          return res.map((d: any) => {
+            return convertAccount(d);
+          });
+        });
+      return res as TAccount[];
+    },
+    [accessToken, postId]
+  );
+
+  return useInfiniteQuery({
+    queryKey: ["rebloggedUsers", postId],
+    queryFn: fetchRebloggedUsers,
+    initialPageParam: undefined,
+    getNextPageParam: (lastPage) => {
+      if (lastPage.length === 0) {
+        return undefined;
+      }
+      return lastPage[lastPage.length - 1].id;
+    },
     staleTime: 1000,
     enabled: enabled,
   });
