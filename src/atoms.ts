@@ -49,6 +49,10 @@ export const ColumnsAtom = atomWithReducer<
     {
       type: "Notification",
     },
+    {
+      type: "UserDetail",
+      userId: "110647225854692384",
+    },
   ],
   arrayReducer
 );

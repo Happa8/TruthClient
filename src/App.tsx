@@ -7,6 +7,7 @@ import TagTimeLine from "./components/Line/TagTimeLine";
 import { ColumnsAtom, tokenAtom } from "./atoms";
 import PostDetailLine from "./components/Line/PostDetailLine";
 import Login from "./components/Page/Login";
+import { UserLine } from "./components/Line/UserLine";
 
 function App() {
   const ColumnsData = useAtomValue(ColumnsAtom);
@@ -62,6 +63,11 @@ function App() {
                     postId={column.postId}
                     columnIndex={i}
                   />
+                );
+
+              case "UserDetail":
+                return (
+                  <UserLine key={i} userId={column.userId} columnIndex={i} />
                 );
               case "Tag":
                 return <TagTimeLine key={i} tag={column.tag} />;

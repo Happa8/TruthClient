@@ -3,12 +3,17 @@ import { calcTimeDelta } from "@/src/utils";
 import { css } from "@/styled-system/css";
 import { FC } from "react";
 import Avatar from "./Avatar";
+import { useAtom } from "jotai";
+import { ColumnsAtom } from "@/src/atoms";
 
 type Props = {
   postdata: TPost;
 };
 
 const PostHeader: FC<Props> = ({ postdata }) => {
+  // カラムの状態を管理するアトム
+  const [_, dispatchColumn] = useAtom(ColumnsAtom);
+
   return (
     <div className={css({ display: "flex", gap: 2, alignItems: "center" })}>
       <Avatar
@@ -16,6 +21,18 @@ const PostHeader: FC<Props> = ({ postdata }) => {
           postdata.group ? postdata.group.avatar : postdata.account.avatar
         }
         subImg={postdata.group && postdata.account.avatar}
+        onClick={(e) => {
+          e.stopPropagation();
+          if (!postdata.group) {
+            dispatchColumn({
+              type: "push",
+              value: {
+                type: "UserDetail",
+                userId: postdata.account.id,
+              },
+            });
+          }
+        }}
       />
       <div
         className={css({
@@ -35,9 +52,25 @@ const PostHeader: FC<Props> = ({ postdata }) => {
         >
           <span
             className={css({
+              _hover: {
+                textDecoration: "underline",
+                cursor: "pointer",
+              },
               fontWeight: "bold",
               color: "gray.900",
             })}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!postdata.group) {
+                dispatchColumn({
+                  type: "push",
+                  value: {
+                    type: "UserDetail",
+                    userId: postdata.account.id,
+                  },
+                });
+              }
+            }}
           >
             {postdata.group
               ? postdata.group.displayName
@@ -52,11 +85,16 @@ const PostHeader: FC<Props> = ({ postdata }) => {
             })}
           >
             {postdata.group && "posted by "}
-            <a
-              href={postdata.account.url}
-              target="_blank"
+            <span
               onClick={(e) => {
                 e.stopPropagation();
+                dispatchColumn({
+                  type: "push",
+                  value: {
+                    type: "UserDetail",
+                    userId: postdata.account.id,
+                  },
+                });
               }}
               className={css({
                 _hover: {
@@ -65,7 +103,7 @@ const PostHeader: FC<Props> = ({ postdata }) => {
               })}
             >
               @{postdata.account.userName}
-            </a>
+            </span>
           </span>
           <span
             className={css({

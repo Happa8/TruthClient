@@ -14,6 +14,10 @@ type Column =
   | {
       type: "Tag";
       tag: string;
+    }
+  | {
+      type: "UserDetail";
+      userId: string;
     };
 
 type Props = Column;
@@ -26,6 +30,8 @@ const Column: FC<Props> = (props) => {
       return <NoteLine />;
     case "Tag":
       return <TagTimeLine tag={props.tag} />;
+    case "UserDetail":
+      return <TagTimeLine tag={props.userId} />;
     default:
       return null;
   }

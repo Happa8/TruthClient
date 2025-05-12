@@ -1,14 +1,15 @@
 import { css } from "@/styled-system/css";
-import { FC } from "react";
+import { ComponentProps, FC } from "react";
 
 type Props = {
   mainImg: string;
   subImg?: string;
-};
+} & ComponentProps<"div">;
 
-const Avatar: FC<Props> = ({ mainImg, subImg }) => {
+const Avatar: FC<Props> = ({ mainImg, subImg, ...props }) => {
   return (
     <div
+      {...props}
       className={css({
         w: 8,
         h: 8,
