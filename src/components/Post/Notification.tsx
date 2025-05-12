@@ -138,7 +138,25 @@ const NotificationCore: FC<{
             src={noteData.account.avatar}
           />
         </span>
-        <span className={css({ fontWeight: "bold" })}>
+        <span
+          className={css({
+            fontWeight: "bold",
+            _hover: {
+              textDecoration: "underline",
+              cursor: "pointer",
+            },
+          })}
+          onClick={(e) => {
+            e.stopPropagation();
+            dispatchColumn({
+              type: "push",
+              value: {
+                type: "UserDetail",
+                userId: noteData.account.id,
+              },
+            });
+          }}
+        >
           {noteData.account.name}
         </span>
         &nbsp;

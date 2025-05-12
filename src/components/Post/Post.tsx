@@ -13,10 +13,12 @@ import ReplyIconButton from "./ReplyIconButton";
 import PostHeader from "./PostHeader";
 import RepostNote from "./RepostNote";
 import Poll from "./Poll";
+import PinnedNote from "./PinnedNote";
 
 type Props = {
   dataAtom: TPostAtom;
   isTree?: boolean;
+  isPinned?: boolean;
 };
 
 const contentStyle = cva({
@@ -55,7 +57,7 @@ const postStyle = cva({
   },
 });
 
-const Post: FC<Props> = ({ dataAtom, isTree = false }) => {
+const Post: FC<Props> = ({ dataAtom, isTree = false, isPinned = false }) => {
   const data = useAtomValue(dataAtom);
 
   // RTかどうかを判定
@@ -131,6 +133,7 @@ const Post: FC<Props> = ({ dataAtom, isTree = false }) => {
           }
         }}
       >
+        {(isPinned || data.pinned) && <PinnedNote />}
         {isRepost && <RepostNote>{data.account.displayName}</RepostNote>}
         <PostHeader postdata={postdata} />
         <div

@@ -410,22 +410,23 @@ export const convertPost = (data: any): TPost => {
     reblogsCount: parseInt(data.reblogs_count),
     repliesCount: parseInt(data.replies_count),
     sensitive: data.sensitive,
-    inReplyTo:
-      data.in_reply_to === null ? undefined : convertPost(data.in_reply_to),
-    reblog: data.reblog === null ? null : convertPost(data.reblog),
+    inReplyTo: !data.in_reply_to ? undefined : convertPost(data.in_reply_to),
+    reblog: !data.reblog ? null : convertPost(data.reblog),
     tags: data.tags.map((d: any) => {
       return {
         name: d.name,
       };
     }),
-    mediaAttachments: data.media_attachments.map((d: any) => convertMedia(d)),
-    card: data.card === null ? undefined : convertCard(data.card),
-    quoteId: data.quote_id === null ? undefined : data.quote_id,
-    quote: data.quote === null ? undefined : convertPost(data.quote),
+    mediaAttachments: data.media_attachments
+      ? data.media_attachments.map((d: any) => convertMedia(d))
+      : [],
+    card: !data.card ? undefined : convertCard(data.card),
+    quoteId: !data.quote_id ? undefined : data.quote_id,
+    quote: !data.quote ? undefined : convertPost(data.quote),
     url: data.url,
     uri: data.uri,
-    group: data.group === null ? undefined : convertGroup(data.group),
-    poll: data.poll === null ? undefined : convertPoll(data.poll),
+    group: !data.group ? undefined : convertGroup(data.group),
+    poll: !data.poll ? undefined : convertPoll(data.poll),
   };
 
   return post;
@@ -479,6 +480,35 @@ export const usePost = ({ id }: { id: string }) => {
     const post = await getPost(accessToken, id);
     const postAtom: TPostAtom = atom(post);
     return postAtom;
+  }, [accessToken, id]);
+
+  return useQuery({
+    queryKey: [id],
+    queryFn: fetcher,
+  });
+};
+
+const getAccount = async (accessToken: string, id: string) => {
+  const res = await fetch(`https://truthsocial.com/api/v1/accounts/${id}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  const resjson = await res.json();
+  return convertAccount(resjson);
+};
+
+export type TAccountAtom = PrimitiveAtom<TAccount>;
+
+// Accountの情報を取得するためのフック
+export const useAccount = ({ id }: { id: string }) => {
+  const [accessToken] = useAtom(tokenAtom);
+
+  // TPostAtom型のアトムを作成
+  const fetcher = useCallback(async () => {
+    const account = await getAccount(accessToken, id);
+    const accountAtom: TAccountAtom = atom(account);
+    return accountAtom;
   }, [accessToken, id]);
 
   return useQuery({
@@ -883,4 +913,168 @@ export const useRebloggedUsers = ({
     staleTime: 1000,
     enabled: enabled,
   });
+};
+
+export const getAccountPosts = async (
+  accessToken: string,
+  accountId: string,
+  maxId?: string,
+  sinceId?: string,
+  minId?: string,
+  onlyMedia?: boolean,
+  excludeReplies?: boolean,
+  excludeReblogs?: boolean,
+  pinned?: boolean,
+  withMuted?: boolean,
+  onlyReplies?: boolean
+): Promise<TPost[]> => {
+  const params = new URLSearchParams();
+
+  if (maxId) params.append("max_id", maxId);
+  if (sinceId) params.append("since_id", sinceId);
+  if (minId) params.append("min_id", minId);
+  if (onlyMedia !== undefined) params.append("only_media", String(onlyMedia));
+  if (excludeReplies !== undefined)
+    params.append("exclude_replies", String(excludeReplies));
+  if (excludeReblogs !== undefined)
+    params.append("exclude_reblogs", String(excludeReblogs));
+  if (pinned !== undefined) params.append("pinned", String(pinned));
+  if (withMuted !== undefined) params.append("with_muted", String(withMuted));
+  if (onlyReplies !== undefined)
+    params.append("only_replies", String(onlyReplies));
+
+  const query = params.toString() ? `?${params.toString()}` : "";
+
+  const res = await fetch(
+    `https://truthsocial.com/api/v1/accounts/${accountId}/statuses${query}`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+  return await res.json().then((res) => {
+    return res.map((d: any) => {
+      const cpost = convertPost(d);
+      return cpost;
+    });
+  });
+};
+
+export const useAccountPosts = ({
+  accountId,
+  onlyMedia,
+  excludeReplies,
+  excludeReblogs,
+  pinned,
+  withMuted,
+  onlyReplies,
+}: {
+  accountId: string;
+  onlyMedia?: boolean;
+  excludeReplies?: boolean;
+  excludeReblogs?: boolean;
+  pinned?: boolean;
+  withMuted?: boolean;
+  onlyReplies?: boolean;
+}) => {
+  const [accessToken] = useAtom(tokenAtom);
+
+  const postListAtom = useMemo(
+    () => atom<TPostAtom[]>([]),
+    [
+      accountId,
+      onlyMedia,
+      excludeReplies,
+      excludeReblogs,
+      pinned,
+      withMuted,
+      onlyReplies,
+    ]
+  );
+  const updatePostListAtom = useUpdateListAtom(postListAtom);
+  const [_a, updatePostList] = useAtom(updatePostListAtom);
+  const postList = useAtomValue(postListAtom);
+  const posts = useCorrectAllValues(postListAtom);
+
+  const fetchAccountPosts = useCallback(
+    async ({ pageParam }: { pageParam?: string }) => {
+      console.log([
+        accessToken,
+        accountId,
+        pageParam,
+        undefined,
+        undefined,
+        onlyMedia,
+        excludeReplies,
+        excludeReblogs,
+        pinned,
+        withMuted,
+        onlyReplies,
+      ]);
+      const res = await getAccountPosts(
+        accessToken,
+        accountId,
+        pageParam,
+        undefined,
+        undefined,
+        onlyMedia,
+        excludeReplies,
+        excludeReblogs,
+        pinned,
+        withMuted,
+        onlyReplies
+      );
+      return res;
+    },
+    [
+      accessToken,
+      accountId,
+      onlyMedia,
+      excludeReplies,
+      excludeReblogs,
+      pinned,
+      withMuted,
+      onlyReplies,
+    ]
+  );
+
+  const { data, fetchNextPage, isFetching } = useInfiniteQuery({
+    queryKey: [
+      "accountPosts",
+      accountId,
+      onlyMedia,
+      excludeReplies,
+      excludeReblogs,
+      pinned,
+      withMuted,
+      onlyReplies,
+    ],
+    queryFn: fetchAccountPosts,
+    initialPageParam: undefined,
+    getNextPageParam: (lastPage) => {
+      if (lastPage.length === 0) {
+        return undefined;
+      }
+      return lastPage[lastPage.length - 1].id;
+    },
+    staleTime: 1000,
+  });
+
+  useEffect(() => {
+    data?.pages.flat().map((d) => {
+      updatePostList(d, "LI");
+    });
+  }, [data, fetchAccountPosts]);
+
+  const loadMoreAccountPosts = () => {
+    fetchNextPage();
+  };
+
+  return {
+    posts,
+    postList,
+    loadMoreAccountPosts,
+    isFetching,
+  };
 };

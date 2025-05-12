@@ -172,7 +172,8 @@ const Poll: FC<Props> = ({ data: originalData }) => {
           </Listbox.Root>
           <Button
             disabled={status === "pending" || value.length === 0}
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
               if (value.length === 0) {
                 return;
               }
