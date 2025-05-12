@@ -1,6 +1,6 @@
 import { ColumnsAtom } from "@/src/atoms";
 import { useAccount } from "@/src/hooks/connection";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom } from "jotai";
 import { FC } from "react";
 import LineWrapper from "./LineWrapper";
 import LineHeader from "./LineHeader";
